@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日AI热点 Top10 | AI Daily Hot</title>
+    <meta name="description" content="每日更新全球人工智能热点新闻，大模型、AI应用、产业政策一站式速览。">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #21262d;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text2: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --orange: #f78166;
+            --purple: #bc8cff;
+            --yellow: #e3b341;
+            --pink: #f778ba;
+            --cyan: #39d2c0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1c2030 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 32px 0 24px;
+            text-align: center;
+        }
+        .header-badge {
+            display: inline-block;
+            background: rgba(88,166,255,0.1);
+            border: 1px solid rgba(88,166,255,0.3);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #58a6ff, #bc8cff, #f778ba);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: var(--text2);
+            font-size: 0.95rem;
+        }
+        .header-date {
+            color: var(--green);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            flex: 1;
+            min-width: 120px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-num {
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        .stat-card:nth-child(1) .stat-num { color: var(--orange); }
+        .stat-card:nth-child(2) .stat-num { color: var(--purple); }
+        .stat-card:nth-child(3) .stat-num { color: var(--green); }
+        .stat-card:nth-child(4) .stat-num { color: var(--cyan); }
+
+        /* Section title */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 36px 0 16px;
+            padding-left: 14px;
+            border-left: 3px solid var(--accent);
+        }
+
+        /* News Card */
+        .news-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 24px;
+            margin-bottom: 14px;
+            transition: border-color 0.2s, transform 0.15s;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+        .news-card:hover {
+            border-color: rgba(88,166,255,0.4);
+            transform: translateY(-1px);
+        }
+        .news-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            border-radius: 12px 0 0 12px;
+        }
+        .news-card.tag-breaking::before { background: var(--orange); }
+        .news-card.tag-model::before { background: var(--purple); }
+        .news-card.tag-industry::before { background: var(--cyan); }
+        .news-card.tag-policy::before { background: var(--green); }
+        .news-card.tag-tool::before { background: var(--yellow); }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .rank-1 { background: linear-gradient(135deg, #f78166, #eb4d3d); color: #fff; }
+        .rank-2 { background: linear-gradient(135deg, #bc8cff, #9b59e8); color: #fff; }
+        .rank-3 { background: linear-gradient(135deg, #58a6ff, #3d8be0); color: #fff; }
+        .rank-default { background: var(--bg3); color: var(--text2); }
+
+        .tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .tag-breaking { background: rgba(247,129,102,0.15); color: var(--orange); }
+        .tag-model   { background: rgba(188,140,255,0.15); color: var(--purple); }
+        .tag-industry { background: rgba(57,210,192,0.15); color: var(--cyan); }
+        .tag-policy  { background: rgba(63,185,80,0.15); color: var(--green); }
+        .tag-tool    { background: rgba(227,179,65,0.15); color: var(--yellow); }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .card-summary {
+            font-size: 0.88rem;
+            color: var(--text2);
+            line-height: 1.7;
+        }
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--text2);
+        }
+        .card-meta span { display: flex; align-items: center; gap: 4px; }
+
+        /* Trend section */
+        .trend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .trend-item {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .trend-icon { font-size: 1.4rem; margin-bottom: 8px; }
+        .trend-label {
+            font-size: 0.78rem;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+        .trend-value {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text2);
+            font-size: 0.82rem;
+        }
+        .footer a { color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5rem; }
+            .container { padding: 20px 14px 40px; }
+            .news-card { padding: 16px 18px; }
+            .stats-bar { gap: 8px; }
+            .stat-card { min-width: calc(50% - 8px); }
+        }
+
+        /* Pulse animation for live badge */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .live-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 1.8s infinite;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="header-badge">🔥 LIVE · AI DAILY HOT</div>
+    <h1>今日 AI 热点 Top 10</h1>
+    <p>全球人工智能前沿动态 · 大模型 · 产业应用 · 政策治理</p>
+    <div class="header-date"><span class="live-dot"></span>更新时间：2026年7月3日</div>
+</div>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-num">10</div>
+            <div class="stat-label">今日热点</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">5</div>
+            <div class="stat-label">大模型动态</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">3</div>
+            <div class="stat-label">产业融资</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num">2</div>
+            <div class="stat-label">政策治理</div>
+        </div>
+    </div>
+
+    <!-- Top 10 News -->
+    <div class="section-title">📡 今日热点速递</div>
+
+    <!-- 1 -->
+    <div class="news-card tag-breaking">
+        <div class="card-top">
+            <div class="rank-badge rank-1">1</div>
+            <span class="tag tag-breaking">突发</span>
+        </div>
+        <div class="card-title">Meta 释放闲置 AI 算力，全球芯片板块暴跌</div>
+        <div class="card-summary">Meta 向市场开放大量闲置 AI 算力资源，引发全球芯片板块剧烈震荡，英伟达、AMD 等 AI 芯片龙头股价大幅下挫。"算力过剩"争论彻底摆上台面，行业进入新一轮供需重估周期。</div>
+        <div class="card-meta">
+            <span>🕐 7月2日</span>
+            <span>💬 算力格局</span>
+        </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="news-card tag-industry">
+        <div class="card-top">
+            <div class="rank-badge rank-2">2</div>
+            <span class="tag tag-industry">融资</span>
+        </div>
+        <div class="card-title">快手可灵 AI 获腾讯 30 亿参投，估值 180 亿美元冲刺港交所</div>
+        <div class="card-summary">快手旗下视频生成 AI「可灵」获得腾讯 30 亿元战略投资，投后估值达 180 亿美元，正式启动港交所上市流程。可灵在全球 AI 视频生成赛道持续领跑，国际市场占有率快速提升。</div>
+        <div class="card-meta">
+            <span>🕐 7月2日</span>
+            <span>💬 产业融资</span>
+        </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="news-card tag-policy">
+        <div class="card-top">
+            <div class="rank-badge rank-3">3</div>
+            <span class="tag tag-policy">治理</span>
+        </div>
+        <div class="card-title">联合国发布首份全球 AI 治理科学评估报告</div>
+        <div class="card-summary">联合国独立国际科学专家组发布首份全球性 AI 评估报告，涵盖 7 大核心领域。秘书长古特雷斯警告："AI 能力已超越科学理解和政府适应能力"，呼吁各国政府不要等待，立即行动。报告将于 7 月 6-7 日提交日内瓦全球 AI 治理对话会议。</div>
+        <div class="card-meta">
+            <span>🕐 7月1日</span>
+            <span>💬 全球治理</span>
+        </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="news-card tag-model">
+        <div class="card-top">
+            <div class="rank-badge rank-default">4</div>
+            <span class="tag tag-model">大模型</span>
+        </div>
+        <div class="card-title">OpenAI 提议无偿划转 5% 股权设立全民 AI 基金</div>
+        <div class="card-summary">OpenAI 在最新论文中首次披露 GPT-5.6 三个 Pro 变体（Soul/Terra/Luna），同时提议无偿划转 5% 股权设立全民 AI 基金，全美科技巨头或同步跟进。美国政府因网络安全顾虑，已要求 GPT-5.6 仅向经审查的受信合作伙伴开放。</div>
+        <div class="card-meta">
+            <span>🕐 7月2日</span>
+            <span>💬 前沿模型</span>
+        </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="news-card tag-model">
+        <div class="card-top">
+            <div class="rank-badge rank-default">5</div>
+            <span class="tag tag-model">大模型</span>
+        </div>
+        <div class="card-title">美团开源 1.6 万亿参数 MoE 大模型 LongCat-2.0</div>
+        <div class="card-summary">美团正式开源 1.6 万亿参数 MoE 混合专家大模型 LongCat-2.0，完成全流程国产算力适配，已实现 5 万张国产加速器稳定部署。模型针对长文本、场景化交互、产业落地做了专项优化，标志着国产大模型算力体系进一步成熟。</div>
+        <div class="card-meta">
+            <span>🕐 7月1日</span>
+            <span>💬 国产大模型</span>
+        </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="news-card tag-tool">
+        <div class="card-top">
+            <div class="rank-badge rank-default">6</div>
+            <span class="tag tag-tool">新工具</span>
+        </div>
+        <div class="card-title">xAI 发布 Voice Agent Builder：2 分钟零代码搭建 AI 语音客服</div>
+        <div class="card-summary">马斯克旗下 xAI 推出 Voice Agent Builder 无代码平台，依托 Grok Voice Think Fast 1.0 模型，支持 2 分钟零代码搭建商用 AI 电话客服，综合成本仅 0.06 美元/分钟，大幅降低企业语音 AI 部署门槛。</div>
+        <div class="card-meta">
+            <span>🕐 7月2日</span>
+            <span>💬 AI工具</span>
+        </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="news-card tag-tool">
+        <div class="card-top">
+            <div class="rank-badge rank-default">7</div>
+            <span class="tag tag-tool">新工具</span>
+        </div>
+        <div class="card-title">Claude Tag 永久嵌入 Slack，AI 成为企业"数字员工"</div>
+        <div class="card-summary">Anthropic 推出 Claude Tag，一个永久嵌入 Slack 的 AI 同事，可在任何频道中接受任务、自动拉取文件、拆解步骤、更新文档。Anthropic 内部 65% 的产品代码已由 Claude 生成。前 MIT 教授警告其可能成为"特洛伊木马"——企业记忆将深度嵌入单一供应商平台。</div>
+        <div class="card-meta">
+            <span>🕐 7月</span>
+            <span>💬 企业AI</span>
+        </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="news-card tag-model">
+        <div class="card-top">
+            <div class="rank-badge rank-default">8</div>
+            <span class="tag tag-model">大模型</span>
+        </div>
+        <div class="card-title">字节跳动 Kling 2.5 发布：AI 视频最长 30 秒、50 路输入</div>
+        <div class="card-summary">字节跳动发布 Kling 2.5，实现三大突破：单片段最长 30 秒（目前 AI 视频生成器中最长）、最多 50 个同时输入、精准元素级编辑。一支口红广告可即时生成英/法/日/西/韩/印地语版本，口型自然匹配各语言。预计 2026 年 7 月公开发布。</div>
+        <div class="card-meta">
+            <span>🕐 7月</span>
+            <span>💬 AI视频</span>
+        </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="news-card tag-industry">
+        <div class="card-top">
+            <div class="rank-badge rank-default">9</div>
+            <span class="tag tag-industry">硬件</span>
+        </div>
+        <div class="card-title">AI 通货膨胀：MacBook、Xbox 因 AI 芯片需求涨价</div>
+        <div class="card-summary">AI 数据中心大量消耗内存芯片，推高消费电子产品成本。苹果在印度将 MacBook Pro 一夜之间涨价约 1000 加元等值，微软同步上调 Xbox 全球售价。内存芯片制造商美光（Micron）创下历史最高利润，成为美国交易量最大的股票。</div>
+        <div class="card-meta">
+            <span>🕐 7月</span>
+            <span>💬 产业链</span>
+        </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="news-card tag-policy">
+        <div class="card-top">
+            <div class="rank-badge rank-default">10</div>
+            <span class="tag tag-policy">政策</span>
+        </div>
+        <div class="card-title">中国八部门印发工业互联网高质量发展实施意见，明确算力一体化规划</div>
+        <div class="card-summary">工信部联合七部委正式发布《关于推动工业互联网高质量发展的实施意见》，明确 2030 年发展目标。文件提出统筹推进工业互联网基础设施、智算设施、超算设施一体化规划与同步建设，布局多层次工业算力网络，全面赋能工业数字化转型。</div>
+        <div class="card-meta">
+            <span>🕐 6月30日</span>
+            <span>💬 产业政策</span>
+        </div>
+    </div>
+
+    <!-- Trend -->
+    <div class="section-title">📊 今日趋势关键词</div>
+    <div class="trend-grid">
+        <div class="trend-item">
+            <div class="trend-icon">⚡</div>
+            <div class="trend-label">算力过剩争议</div>
+            <div class="trend-value">Meta 开放闲置算力引发行业震荡</div>
+        </div>
+        <div class="trend-item">
+            <div class="trend-icon">💰</div>
+            <div class="trend-label">AI 视频融资热</div>
+            <div class="trend-value">可灵估值 180 亿美元冲港股</div>
+        </div>
+        <div class="trend-item">
+            <div class="trend-icon">🌐</div>
+            <div class="trend-label">全球 AI 治理</div>
+            <div class="trend-value">联合国首份科学评估报告发布</div>
+        </div>
+        <div class="trend-item">
+            <div class="trend-icon">🤖</div>
+            <div class="trend-label">企业 AI 代理</div>
+            <div class="trend-value">Claude 嵌入 Slack 成数字员工</div>
+        </div>
+        <div class="trend-item">
+            <div class="trend-icon">🎬</div>
+            <div class="trend-label">AI 视频突破</div>
+            <div class="trend-value">Kling 2.5 支持 30 秒长视频</div>
+        </div>
+        <div class="trend-item">
+            <div class="trend-icon">🔒</div>
+            <div class="trend-label">模型安全监管</div>
+            <div class="trend-value">GPT-5.6 被美国政府限制开放</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>📡 数据来源：AI Top 100 / UN News / CSDN / imfounder / 新浪财经等</p>
+    <p style="margin-top:8px;">本页面每日自动更新 · 仅供信息参考 · <a href="https://github.com">在 GitHub Pages 上托管</a></p>
+    <p style="margin-top:8px; font-size:0.75rem; color:#484f58;">Generated on 2026-07-03 · AI Daily Hot</p>
+</div>
+
+</body>
+</html>
