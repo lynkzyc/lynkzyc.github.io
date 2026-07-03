@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本周AI大模型TOP10 | AI Model Weekly</title>
+    <meta name="description" content="本周全球AI大模型前沿动态，GPT、Claude、Gemini、国产大模型一站式速览。">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #21262d;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text2: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --orange: #f78166;
+            --purple: #bc8cff;
+            --yellow: #e3b341;
+            --pink: #f778ba;
+            --cyan: #39d2c0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .header {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1c2030 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 32px 0 24px;
+            text-align: center;
+        }
+        .header-badge {
+            display: inline-block;
+            background: rgba(188,140,255,0.1);
+            border: 1px solid rgba(188,140,255,0.3);
+            color: var(--purple);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #bc8cff, #58a6ff, #39d2c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .header p { color: var(--text2); font-size: 0.95rem; }
+        .header-date {
+            color: var(--green);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .container { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+        .stats-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+        .stat-card {
+            flex: 1; min-width: 120px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 16px; text-align: center;
+        }
+        .stat-num { font-size: 1.6rem; font-weight: 800; }
+        .stat-label { font-size: 0.75rem; color: var(--text2); margin-top: 4px; }
+        .stat-card:nth-child(1) .stat-num { color: var(--purple); }
+        .stat-card:nth-child(2) .stat-num { color: var(--accent); }
+        .stat-card:nth-child(3) .stat-num { color: var(--green); }
+        .stat-card:nth-child(4) .stat-num { color: var(--cyan); }
+
+        .section-title {
+            font-size: 1.1rem; font-weight: 700; color: var(--text);
+            margin: 36px 0 16px; padding-left: 14px;
+            border-left: 3px solid var(--purple);
+        }
+
+        .news-card {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 12px; padding: 22px 24px; margin-bottom: 14px;
+            transition: border-color 0.2s, transform 0.15s;
+            position: relative; overflow: hidden;
+        }
+        .news-card:hover { border-color: rgba(188,140,255,0.4); transform: translateY(-1px); }
+        .news-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 4px; border-radius: 12px 0 0 12px;
+        }
+        .news-card.c-anthropic::before { background: var(--orange); }
+        .news-card.c-openai::before { background: var(--green); }
+        .news-card.c-google::before { background: var(--accent); }
+        .news-card.c-microsoft::before { background: var(--cyan); }
+        .news-card.c-china::before { background: #e34c26; }
+        .news-card.c-nvidia::before { background: var(--yellow); }
+        .news-card.c-meta::before { background: var(--purple); }
+
+        .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .rank-badge {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.95rem; flex-shrink: 0;
+        }
+        .rank-1 { background: linear-gradient(135deg, #bc8cff, #9b59e8); color: #fff; }
+        .rank-2 { background: linear-gradient(135deg, #58a6ff, #3d8be0); color: #fff; }
+        .rank-3 { background: linear-gradient(135deg, #39d2c0, #2da89a); color: #fff; }
+        .rank-default { background: var(--bg3); color: var(--text2); }
+
+        .tag {
+            font-size: 0.7rem; font-weight: 700; padding: 3px 9px;
+            border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase;
+        }
+        .tag-anthropic { background: rgba(247,129,102,0.15); color: var(--orange); }
+        .tag-openai { background: rgba(63,185,80,0.15); color: var(--green); }
+        .tag-google { background: rgba(88,166,255,0.15); color: var(--accent); }
+        .tag-microsoft { background: rgba(57,210,192,0.15); color: var(--cyan); }
+        .tag-china { background: rgba(227,76,38,0.15); color: #e34c26; }
+        .tag-nvidia { background: rgba(227,179,65,0.15); color: var(--yellow); }
+        .tag-meta { background: rgba(188,140,255,0.15); color: var(--purple); }
+
+        .card-title { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.5; }
+        .card-summary { font-size: 0.88rem; color: var(--text2); line-height: 1.7; }
+        .card-meta { display: flex; gap: 16px; margin-top: 12px; font-size: 0.75rem; color: var(--text2); }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(188,140,255,0.08), rgba(88,166,255,0.05));
+            border: 1px solid rgba(188,140,255,0.2);
+            border-radius: 12px; padding: 20px 24px; margin-bottom: 14px;
+        }
+        .highlight-title { font-size: 0.85rem; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
+        .highlight-text { font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
+
+        .footer {
+            text-align: center; padding: 32px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text2); font-size: 0.82rem;
+        }
+        .footer a { color: var(--accent); }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5rem; }
+            .container { padding: 20px 14px 40px; }
+            .news-card { padding: 16px 18px; }
+            .stats-bar { gap: 8px; }
+            .stat-card { min-width: calc(50% - 8px); }
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .live-dot {
+            display: inline-block; width: 8px; height: 8px;
+            background: var(--green); border-radius: 50%;
+            margin-right: 6px; animation: pulse 1.8s infinite; vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-badge">🧠 AI MODEL WEEKLY</div>
+    <h1>本周 AI 大模型 TOP 10</h1>
+    <p>全球大模型前沿动态 · 闭源旗舰 · 开源生态 · 国产崛起</p>
+    <div class="header-date"><span class="live-dot"></span>本周更新：2026年6月28日 - 7月3日</div>
+</div>
+
+<div class="container">
+
+    <div class="stats-bar">
+        <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">重磅模型</div></div>
+        <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">闭源旗舰</div></div>
+        <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">开源新发</div></div>
+        <div class="stat-card"><div class="stat-num">1.5M</div><div class="stat-label">最长上下文</div></div>
+    </div>
+
+    <div class="highlight-box">
+        <div class="highlight-title">⚡ 本周核心信号</div>
+        <div class="highlight-text">2026年6月成为AI行业有史以来最密集的发布月。Claude Opus 4.8登顶科学推理、GPT-5.6泄露150万上下文、Google三大Gemini齐发、微软7款自研模型脱离OpenAI、英伟达全栈物理AI——AI正从"对话式"全面转向"自主智能体"时代。</div>
+    </div>
+
+    <div class="section-title">🧠 本周大模型热点速递</div>
+
+    <!-- 1 -->
+    <div class="news-card c-anthropic">
+        <div class="card-top">
+            <div class="rank-badge rank-1">1</div>
+            <span class="tag tag-anthropic">Anthropic</span>
+        </div>
+        <div class="card-title">Claude Opus 4.8 登顶科学推理王座，估值超越 OpenAI</div>
+        <div class="card-summary">Anthropic 旗舰模型 Claude Opus 4.8 刷新多项基准纪录：ScienceQA 76.4分登顶，科学推理 77.19分全球第一，SWE-Bench Pro 69.2%。速度提升 2.5 倍、价格降低约 2/3。Anthropic 估值达 9650 亿美元，首次超越 OpenAI，年化收入约 470 亿美元，企业客户贡献超 80%。</div>
+        <div class="card-meta"><span>🕐 5月底发布</span><span>💬 科学推理全球第一</span></div>
+    </div>
+
+    <!-- 2 -->
+    <div class="news-card c-openai">
+        <div class="card-top">
+            <div class="rank-badge rank-2">2</div>
+            <span class="tag tag-openai">OpenAI</span>
+        </div>
+        <div class="card-title">GPT-5.6 遭泄露：150 万 tokens 上下文，迭代速度惊人</div>
+        <div class="card-summary">多名开发者在 Codex 后端日志中发现代号 "iris-alpha" 的未官宣模型，预计为 GPT-5.6。上下文窗口达 150 万 tokens（较 GPT-5.5 提升 43%）。GPT-5.5 Instant 已成为 ChatGPT 默认模型，幻觉率降低 52.5%，支持 100 万 tokens，ChatGPT 全球用户接近 10 亿。</div>
+        <div class="card-meta"><span>🕐 6月泄露</span><span>💬 150万上下文</span></div>
+    </div>
+
+    <!-- 3 -->
+    <div class="news-card c-google">
+        <div class="card-top">
+            <div class="rank-badge rank-3">3</div>
+            <span class="tag tag-google">Google</span>
+        </div>
+        <div class="card-title">Google I/O 2026：三大 Gemini 新品齐发，投入 1800 亿美元布局 AI</div>
+        <div class="card-summary">Google 一口气发布三大产品：Gemini 3.5 Flash（推理速度 284-289 tokens/秒，免费开放）、Gemini Omni（世界模型，原生视频生成）、Gemini Spark（常驻 AI Agent / 数字分身）。同时宣布投入 1800 亿美元布局 AI 基础设施，创下行业纪录。</div>
+        <div class="card-meta"><span>🕐 5月发布</span><span>💬 世界模型+数字分身</span></div>
+    </div>
+
+    <!-- 4 -->
+    <div class="news-card c-microsoft">
+        <div class="card-top">
+            <div class="rank-badge rank-default">4</div>
+            <span class="tag tag-microsoft">Microsoft</span>
+        </div>
+        <div class="card-title">微软 Build 2026：7 款自研 MAI 模型，加速脱离 OpenAI 依赖</div>
+        <div class="card-summary">微软发布 7 款自研 MAI 系列模型，旗舰 MAI-Thinking-1 为 350 亿参数稀疏 MoE 架构，256K 上下文，无蒸馏自研（不用 OpenAI 数据），成本直降 10 倍。Project Polaris 计划旨在终结对 OpenAI 的依赖，将 Windows 打造为 AI Agent 平台。</div>
+        <div class="card-meta"><span>🕐 6月2日</span><span>💬 自研脱离OpenAI</span></div>
+    </div>
+
+    <!-- 5 -->
+    <div class="news-card c-china">
+        <div class="card-top">
+            <div class="rank-badge rank-default">5</div>
+            <span class="tag tag-china">阿里</span>
+        </div>
+        <div class="card-title">阿里 Qwen3.7-Plus：多模态智能体闭环，视觉能力中国第一</div>
+        <div class="card-summary">阿里云发布千问 3.7 系列最新多模态大模型 Qwen3.7-Plus。视觉能力全球第五、中国第一，实现"看、想、写、做、验"一个模型全搞定。多模态智能体能力大幅升级，可一键复刻桌面端专业软件，已上架千问云和阿里云百炼。</div>
+        <div class="card-meta"><span>🕐 6月2日</span><span>💬 国产多模态</span></div>
+    </div>
+
+    <!-- 6 -->
+    <div class="news-card c-china">
+        <div class="card-top">
+            <div class="rank-badge rank-default">6</div>
+            <span class="tag tag-china">DeepSeek</span>
+        </div>
+        <div class="card-title">DeepSeek V4：百万上下文 + 全面开源，成本仅 GPT-5 的 3%</div>
+        <div class="card-summary">DeepSeek V4 同步开源 Pro 与 Flash 两款模型，均支持 100 万 tokens 上下文。6 大核心升级带来更强推理和编程能力。降价策略延续——同样任务 GPT-5 成本约 15 美元，DeepSeek 仅需约 0.5 美元，成本仅 3%。成为全球开源 AI 中坚力量。</div>
+        <div class="card-meta"><span>🕐 4月发布</span><span>💬 开源+百万上下文</span></div>
+    </div>
+
+    <!-- 7 -->
+    <div class="news-card c-china">
+        <div class="card-top">
+            <div class="rank-badge rank-default">7</div>
+            <span class="tag tag-china">MiniMax</span>
+        </div>
+        <div class="card-title">MiniMax M3 旗舰开源：编程超 GPT-5.5，启动 IPO 估值 2600 亿</div>
+        <div class="card-summary">MiniMax 发布 M3 旗舰通用大模型，编程能力号称超过 GPT-5.5，支持 100 万上下文，原生多模态 + Agent 能力。同步开源旗舰模型，并宣布启动 A 股科创板 IPO 辅导，估值约 2600 亿港元，成为国产大模型商业化标杆。</div>
+        <div class="card-meta"><span>🕐 6月1日</span><span>💬 开源+IPO</span></div>
+    </div>
+
+    <!-- 8 -->
+    <div class="news-card c-nvidia">
+        <div class="card-top">
+            <div class="rank-badge rank-default">8</div>
+            <span class="tag tag-nvidia">NVIDIA</span>
+        </div>
+        <div class="card-title">英伟达 GTC Taipei：Cosmos 3 世界模型 + Vera Rubin 量产 + RTX Spark</div>
+        <div class="card-summary">黄仁勋发布全栈物理 AI 生态：Cosmos 3 世界模型（全球首款完全开放全模态物理 AI 模型）、Vera Rubin AI 计算平台（算力提升 10 倍，全面量产）、RTX Spark 芯片（128GB 统一内存，120B 模型本地推理）。人形机器人参考设计 H2+ 与宇树科技合作。</div>
+        <div class="card-meta"><span>🕐 6月1日</span><span>💬 物理AI全栈</span></div>
+    </div>
+
+    <!-- 9 -->
+    <div class="news-card c-openai">
+        <div class="card-top">
+            <div class="rank-badge rank-default">9</div>
+            <span class="tag tag-openai">OpenAI</span>
+        </div>
+        <div class="card-title">OpenAI Codex 整合 ChatGPT：6 款职场插件 + 移动端接入</div>
+        <div class="card-summary">OpenAI 举办 "Intelligence at Work" 活动，宣布将 Codex 核心能力整合进 ChatGPT，面向全球用户开放。同步推出 6 款职场 Codex 插件，支持移动端接入和 Triggers 自动化流水线。标志着 OpenAI 正将专业编程能力推向大众市场，Claude Code 年化收入已达 63 亿美元。</div>
+        <div class="card-meta"><span>🕐 6月3日</span><span>💬 编程Agent大众化</span></div>
+    </div>
+
+    <!-- 10 -->
+    <div class="news-card c-meta">
+        <div class="card-top">
+            <div class="rank-badge rank-default">10</div>
+            <span class="tag tag-meta">Meta</span>
+        </div>
+        <div class="card-title">Meta 战略大转向：Llama 进入维护模式，全力研发闭源 Muse Spark</div>
+        <div class="card-summary">Meta 宣布将研发重心转向闭源模型 Muse Spark，开源的 Llama 系列进入"维护模式"。Llama 累计下载量已突破 12 亿次，但 Meta 认为开源模式难以支撑超级智能研发。Muse Spark 由超级智能实验室耗时九个月秘密开发，成本仅竞争对手 1/9。开源 AI 生态将更多依靠 DeepSeek、阿里、MiniMax 等中国厂商。</div>
+        <div class="card-meta"><span>🕐 5月宣布</span><span>💬 开源转闭源</span></div>
+    </div>
+
+    <div class="section-title">📊 本周趋势关键词</div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 32px;">
+        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+            <div style="font-size:1.4rem; margin-bottom:8px;">🤖</div>
+            <div style="font-size:0.78rem; color:var(--text2); margin-bottom:4px;">Agent 成主战场</div>
+            <div style="font-size:0.92rem; font-weight:700; color:var(--text);">Google/微软/OpenAI 全面押注</div>
+        </div>
+        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+            <div style="font-size:1.4rem; margin-bottom:8px;">📐</div>
+            <div style="font-size:0.78rem; color:var(--text2); margin-bottom:4px;">百万上下文成标配</div>
+            <div style="font-size:0.92rem; font-weight:700; color:var(--text);">GPT-5.6 泄露 150 万 tokens</div>
+        </div>
+        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+            <div style="font-size:1.4rem; margin-bottom:8px;">🌏</div>
+            <div style="font-size:0.78rem; color:var(--text2); margin-bottom:4px;">国产开源崛起</div>
+            <div style="font-size:0.92rem; font-weight:700; color:var(--text);">DeepSeek/阿里/MiniMax 填补空白</div>
+        </div>
+        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+            <div style="font-size:1.4rem; margin-bottom:8px;">💰</div>
+            <div style="font-size:0.78rem; color:var(--text2); margin-bottom:4px;">价格两极分化</div>
+            <div style="font-size:0.92rem; font-weight:700; color:var(--text);">开源趋近免费，旗舰涨价</div>
+        </div>
+        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+            <div style="font-size:1.4rem; margin-bottom:8px;">💻</div>
+            <div style="font-size:0.78rem; color:var(--text2); margin-bottom:4px;">编程能力成核心</div>
+            <div style="font-size:0.92rem; font-weight:700; color:var(--text);">Claude Code 贡献 80% 代码</div>
+        </div>
+        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+            <div style="font-size:1.4rem; margin-bottom:8px;">⚠️</div>
+            <div style="font-size:0.78rem; color:var(--text2); margin-bottom:4px;">安全监管升级</div>
+            <div style="font-size:0.92rem; font-weight:700; color:var(--text);">Anthropic 呼吁暂停研究</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>📡 数据来源：无矩AI / Google I/O / Microsoft Build / NVIDIA GTC / Anthropic 官方等</p>
+    <p style="margin-top:8px;">本页面每周更新 · 仅供信息参考 · <a href="https://lynkzyc.github.io/">返回首页</a></p>
+    <p style="margin-top:8px; font-size:0.75rem; color:#484f58;">Generated on 2026-07-03 · AI Model Weekly</p>
+</div>
+
+</body>
+</html>
