@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI产品三类形态解析与学习分享</title>
+<style>
+/* ===== 全局重置与基础 ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-dark:#0a0e27;
+  --bg-card:#131830;
+  --bg-card-hover:#1a2040;
+  --text-primary:#e2e8f0;
+  --text-secondary:#94a3b8;
+  --text-muted:#64748b;
+  --color-model:#818cf8;
+  --color-model-bg:rgba(99,102,241,.12);
+  --color-tool:#34d399;
+  --color-tool-bg:rgba(16,185,129,.12);
+  --color-agent:#fbbf24;
+  --color-agent-bg:rgba(245,158,11,.12);
+  --gradient-1:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  --gradient-2:linear-gradient(135deg,#10b981 0%,#059669 100%);
+  --gradient-3:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);
+  --gradient-title:linear-gradient(135deg,#818cf8 0%,#34d399 50%,#fbbf24 100%);
+  --shadow-glow-model:0 0 40px rgba(99,102,241,.2);
+  --shadow-glow-tool:0 0 40px rgba(16,185,129,.2);
+  --shadow-glow-agent:0 0 40px rgba(245,158,11,.2);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:var(--bg-dark);
+  color:var(--text-primary);
+  line-height:1.8;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ===== 顶部进度条 ===== */
+#progress-bar{
+  position:fixed;top:0;left:0;height:4px;width:0%;
+  background:var(--gradient-title);
+  z-index:1000;
+  transition:width .1s ease;
+  box-shadow:0 0 10px rgba(129,140,248,.5);
+}
+
+/* ===== 导航点 ===== */
+#nav-dots{
+  position:fixed;right:24px;top:50%;transform:translateY(-50%);
+  z-index:999;display:flex;flex-direction:column;gap:14px;
+}
+.nav-dot{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--text-muted);cursor:pointer;
+  transition:all .3s ease;border:2px solid transparent;
+}
+.nav-dot.active{background:var(--color-model);transform:scale(1.3);box-shadow:0 0 10px currentColor}
+.nav-dot:hover{border-color:var(--text-primary)}
+
+/* ===== 通用动画类 ===== */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.15s}
+.reveal-delay-2{transition-delay:.3s}
+.reveal-delay-3{transition-delay:.45s}
+.reveal-delay-4{transition-delay:.6s}
+.reveal-delay-5{transition-delay:.75s}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(99,102,241,.2)}50%{box-shadow:0 0 40px rgba(99,102,241,.4)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes fadeInScale{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes bounce-in{0%{opacity:0;transform:scale(.3) translateY(40px)}60%{opacity:1;transform:scale(1.05) translateY(-5px)}100%{transform:scale(1) translateY(0)}}
+@keyframes gradient-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ===== Hero区域 ===== */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;text-align:center;padding:2rem;
+  background:radial-gradient(ellipse at center,#131830 0%,#0a0e27 70%);
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23818cf8' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  z-index:0;
+}
+.hero-content{position:relative;z-index:1;max-width:800px}
+.hero-badge{
+  display:inline-block;padding:6px 20px;border-radius:999px;
+  background:var(--bg-card);border:1px solid rgba(129,140,248,.3);
+  color:var(--text-secondary);font-size:.85rem;letter-spacing:1px;
+  margin-bottom:2rem;animation:fadeInScale 1s ease;
+}
+.hero h1{
+  font-size:clamp(2rem,5vw,3.5rem);font-weight:800;
+  line-height:1.3;margin-bottom:1.5rem;
+  background:var(--gradient-title);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradient-shift 4s ease infinite;
+}
+.hero-subtitle{font-size:clamp(1rem,2vw,1.3rem);color:var(--text-secondary);margin-bottom:.5rem}
+.hero-meta{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem}
+.hero-meta-item{
+  display:flex;align-items:center;gap:.5rem;
+  color:var(--text-muted);font-size:.9rem;
+  padding:8px 16px;border-radius:8px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+}
+.hero-meta-item .emoji{font-size:1.2rem}
+.hero-scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  color:var(--text-muted);font-size:.85rem;text-align:center;
+  animation:float 2s ease-in-out infinite;
+}
+.hero-scroll-hint .arrow{display:block;font-size:1.5rem;margin-top:4px}
+
+/* ===== 浮动装饰emoji ===== */
+.float-emoji{position:absolute;font-size:2.5rem;opacity:.15;animation:float 6s ease-in-out infinite;z-index:0}
+.float-emoji:nth-child(1){top:15%;left:10%;animation-delay:0s}
+.float-emoji:nth-child(2){top:25%;right:12%;animation-delay:1s}
+.float-emoji:nth-child(3){bottom:20%;left:15%;animation-delay:2s}
+.float-emoji:nth-child(4){bottom:30%;right:10%;animation-delay:3s}
+.float-emoji:nth-child(5){top:50%;left:5%;animation-delay:1.5s}
+.float-emoji:nth-child(6){top:40%;right:6%;animation-delay:.5s}
+
+/* ===== 通用Section ===== */
+.section{padding:5rem 2rem;max-width:1000px;margin:0 auto;position:relative}
+.section-tag{
+  display:inline-block;font-size:.8rem;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:4px 14px;border-radius:6px;margin-bottom:1rem;
+}
+.section-title{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;margin-bottom:1rem;line-height:1.4}
+.section-desc{color:var(--text-secondary);font-size:1.05rem;margin-bottom:2.5rem;max-width:700px}
+
+/* ===== 开场白 ===== */
+.opening{text-align:center;padding:6rem 2rem}
+.opening-text{font-size:clamp(1.1rem,2vw,1.4rem);color:var(--text-primary);line-height:2;max-width:750px;margin:0 auto}
+.opening-highlight{color:var(--color-model);font-weight:600}
+.opening-highlight-2{color:var(--color-tool);font-weight:600}
+.opening-highlight-3{color:var(--color-agent);font-weight:600}
+
+/* ===== 三类产品卡片 ===== */
+.products{display:flex;flex-direction:column;gap:3rem}
+.product-card{
+  background:var(--bg-card);
+  border-radius:24px;padding:2.5rem;
+  position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.05);
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+}
+.product-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.12)}
+.product-card.model{border-left:4px solid var(--color-model)}
+.product-card.tool{border-left:4px solid var(--color-tool)}
+.product-card.agent{border-left:4px solid var(--color-agent)}
+.product-card.model:hover{box-shadow:var(--shadow-glow-model)}
+.product-card.tool:hover{box-shadow:var(--shadow-glow-tool)}
+.product-card.agent:hover{box-shadow:var(--shadow-glow-agent)}
+
+.product-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.product-icon{
+  width:64px;height:64px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;flex-shrink:0;
+  animation:float 4s ease-in-out infinite;
+}
+.product-card.model .product-icon{background:var(--color-model-bg)}
+.product-card.tool .product-icon{background:var(--color-tool-bg)}
+.product-card.agent .product-icon{background:var(--color-agent-bg)}
+
+.product-title-group{flex:1;min-width:200px}
+.product-number{font-size:.75rem;font-weight:700;letter-spacing:2px;color:var(--text-muted);margin-bottom:4px}
+.product-title{font-size:1.6rem;font-weight:700;margin-bottom:4px}
+.product-card.model .product-title{color:var(--color-model)}
+.product-card.tool .product-title{color:var(--color-tool)}
+.product-card.agent .product-title{color:var(--color-agent)}
+.product-nickname{font-size:1rem;color:var(--text-secondary);font-style:italic}
+
+.product-representatives{
+  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem;
+}
+.rep-tag{
+  padding:4px 12px;border-radius:8px;font-size:.82rem;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:var(--text-secondary);
+}
+.product-card.model .rep-tag{border-color:rgba(129,140,248,.2)}
+.product-card.tool .rep-tag{border-color:rgba(52,211,153,.2)}
+.product-card.agent .rep-tag{border-color:rgba(251,191,36,.2)}
+
+.product-definition{
+  font-size:1.05rem;color:var(--text-primary);
+  padding:1rem 1.25rem;border-radius:12px;
+  margin-bottom:1.5rem;line-height:1.9;
+}
+.product-card.model .product-definition{background:var(--color-model-bg);border-left:3px solid var(--color-model)}
+.product-card.tool .product-definition{background:var(--color-tool-bg);border-left:3px solid var(--color-tool)}
+.product-card.agent .product-definition{background:var(--color-agent-bg);border-left:3px solid var(--color-agent)}
+
+.product-section-label{font-size:.8rem;font-weight:600;color:var(--text-muted);letter-spacing:1px;margin-bottom:.75rem;text-transform:uppercase}
+
+.feature-list{list-style:none;padding:0;margin-bottom:1.5rem}
+.feature-list li{
+  padding:8px 0 8px 28px;position:relative;
+  color:var(--text-secondary);font-size:.98rem;
+  transition:all .3s ease;
+}
+.feature-list li::before{
+  content:'';position:absolute;left:0;top:14px;
+  width:8px;height:8px;border-radius:50%;
+}
+.product-card.model .feature-list li::before{background:var(--color-model)}
+.product-card.tool .feature-list li::before{background:var(--color-tool)}
+.product-card.agent .feature-list li::before{background:var(--color-agent)}
+.feature-list li:hover{color:var(--text-primary);padding-left:32px}
+
+.scenario-list{list-style:none;padding:0;margin-bottom:1.5rem}
+.scenario-list li{
+  padding:10px 14px;margin-bottom:8px;border-radius:10px;
+  background:rgba(255,255,255,.03);font-size:.92rem;color:var(--text-secondary);
+  border-left:2px solid transparent;transition:all .3s ease;
+}
+.product-card.model .scenario-list li{border-left-color:var(--color-model)}
+.product-card.tool .scenario-list li{border-left-color:var(--color-tool)}
+.product-card.agent .scenario-list li{border-left-color:var(--color-agent)}
+.scenario-list li:hover{background:rgba(255,255,255,.06);transform:translateX(4px)}
+
+.key-feature{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:1rem 1.25rem;border-radius:12px;
+  background:rgba(255,255,255,.04);font-size:.95rem;
+}
+.key-feature .icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+.key-feature .text{color:var(--text-primary)}
+.key-feature .text strong{font-weight:700}
+
+/* ===== 装修比喻区域 ===== */
+.analogy-section{padding:5rem 2rem;max-width:1000px;margin:0 auto}
+.analogy-intro{text-align:center;margin-bottom:3rem}
+.analogy-cards{display:grid;grid-template-columns:1fr;gap:2rem}
+@media(min-width:768px){.analogy-cards{grid-template-columns:repeat(3,1fr)}}
+
+.analogy-card{
+  background:var(--bg-card);border-radius:20px;
+  padding:2rem 1.5rem;text-align:center;
+  position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,.05);
+  transition:all .4s cubic-bezier(.16,1,.3,1);
+}
+.analogy-card:hover{transform:translateY(-8px) scale(1.02)}
+.analogy-card.model:hover{box-shadow:var(--shadow-glow-model);border-color:var(--color-model)}
+.analogy-card.tool:hover{box-shadow:var(--shadow-glow-tool);border-color:var(--color-tool)}
+.analogy-card.agent:hover{box-shadow:var(--shadow-glow-agent);border-color:var(--color-agent)}
+
+.analogy-emoji{font-size:3rem;margin-bottom:1rem;display:inline-block;animation:float 3s ease-in-out infinite}
+.analogy-role{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.analogy-card.model .analogy-role{color:var(--color-model)}
+.analogy-card.tool .analogy-role{color:var(--color-tool)}
+.analogy-card.agent .analogy-role{color:var(--color-agent)}
+.analogy-desc{font-size:.9rem;color:var(--text-secondary);line-height:1.7}
+.analogy-arrow{font-size:1.5rem;color:var(--text-muted);margin:.75rem 0}
+
+/* ===== 对比表格 ===== */
+.comparison-section{padding:5rem 2rem;max-width:1100px;margin:0 auto}
+.comparison-table-wrapper{overflow-x:auto;border-radius:16px;border:1px solid rgba(255,255,255,.08)}
+.comparison-table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:700px}
+.comparison-table th{
+  padding:1rem 1.25rem;text-align:left;font-weight:700;
+  background:var(--bg-card);position:sticky;top:0;
+}
+.comparison-table th:first-child{color:var(--text-muted);font-size:.85rem}
+.comparison-table th.model{color:var(--color-model)}
+.comparison-table th.tool{color:var(--color-tool)}
+.comparison-table th.agent{color:var(--color-agent)}
+.comparison-table td{
+  padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,.05);
+  color:var(--text-secondary);line-height:1.7;
+}
+.comparison-table td:first-child{font-weight:600;color:var(--text-primary);font-size:.88rem;white-space:nowrap}
+.comparison-table tr:hover td{background:rgba(255,255,255,.02)}
+.comparison-table tr{transition:background .3s ease}
+
+/* ===== 提示词对比区域 ===== */
+.prompt-section{padding:5rem 2rem;max-width:1000px;margin:0 auto}
+.prompt-scenario{
+  text-align:center;padding:1.5rem;border-radius:16px;
+  background:var(--bg-card);border:1px solid rgba(255,255,255,.06);
+  margin-bottom:3rem;
+}
+.prompt-scenario .label{font-size:.8rem;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase}
+.prompt-scenario .text{font-size:1.15rem;color:var(--text-primary);margin-top:.5rem;font-weight:600}
+
+.prompt-cards{display:flex;flex-direction:column;gap:2rem}
+.prompt-card{
+  background:var(--bg-card);border-radius:20px;
+  overflow:hidden;border:1px solid rgba(255,255,255,.05);
+  transition:all .4s ease;
+}
+.prompt-card:hover{transform:translateY(-3px)}
+.prompt-card.model{border-top:3px solid var(--color-model)}
+.prompt-card.tool{border-top:3px solid var(--color-tool)}
+.prompt-card.agent{border-top:3px solid var(--color-agent)}
+
+.prompt-card-header{padding:1.25rem 1.75rem;display:flex;align-items:center;gap:.75rem}
+.prompt-card-header .badge{
+  font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:6px;
+}
+.prompt-card.model .badge{background:var(--color-model-bg);color:var(--color-model)}
+.prompt-card.tool .badge{background:var(--color-tool-bg);color:var(--color-tool)}
+.prompt-card.agent .badge{background:var(--color-agent-bg);color:var(--color-agent)}
+.prompt-card-header .title{font-size:1rem;color:var(--text-secondary)}
+
+.prompt-box{
+  margin:0 1.75rem 1.25rem;padding:1rem 1.25rem;
+  border-radius:10px;background:rgba(255,255,255,.03);
+  border-left:3px solid var(--text-muted);
+  font-size:.9rem;color:var(--text-secondary);font-style:italic;
+}
+.prompt-card.model .prompt-box{border-left-color:var(--color-model)}
+.prompt-card.tool .prompt-box{border-left-color:var(--color-tool)}
+.prompt-card.agent .prompt-box{border-left-color:var(--color-agent)}
+
+.prompt-response{padding:0 1.75rem 1.5rem}
+.prompt-response-label{font-size:.75rem;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:.75rem}
+.prompt-steps{list-style:none;padding:0;counter-reset:step}
+.prompt-step{
+  padding:10px 0 10px 36px;position:relative;
+  color:var(--text-secondary);font-size:.9rem;line-height:1.7;
+  counter-increment:step;
+}
+.prompt-step::before{
+  content:counter(step);position:absolute;left:0;top:8px;
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;
+}
+.prompt-card.model .prompt-step::before{background:var(--color-model-bg);color:var(--color-model)}
+.prompt-card.tool .prompt-step::before{background:var(--color-tool-bg);color:var(--color-tool)}
+.prompt-card.agent .prompt-step::before{background:var(--color-agent-bg);color:var(--color-agent)}
+
+.prompt-result{
+  margin:0 1.75rem 1.5rem;padding:1rem 1.25rem;
+  border-radius:10px;font-size:.9rem;font-weight:600;
+  display:flex;align-items:flex-start;gap:.5rem;
+}
+.prompt-card.model .prompt-result{background:var(--color-model-bg);color:var(--color-model)}
+.prompt-card.tool .prompt-result{background:var(--color-tool-bg);color:var(--color-tool)}
+.prompt-card.agent .prompt-result{background:var(--color-agent-bg);color:var(--color-agent)}
+
+/* ===== 总结区域 ===== */
+.summary-section{padding:5rem 2rem;max-width:900px;margin:0 auto;text-align:center}
+.summary-cards{display:grid;grid-template-columns:1fr;gap:1.5rem;margin-bottom:2.5rem}
+@media(min-width:768px){.summary-cards{grid-template-columns:repeat(3,1fr)}}
+.summary-card{
+  padding:2rem 1.5rem;border-radius:20px;
+  background:var(--bg-card);border:1px solid rgba(255,255,255,.05);
+  transition:all .4s ease;
+}
+.summary-card:hover{transform:translateY(-6px)}
+.summary-card.model:hover{box-shadow:var(--shadow-glow-model)}
+.summary-card.tool:hover{box-shadow:var(--shadow-glow-tool)}
+.summary-card.agent:hover{box-shadow:var(--shadow-glow-agent)}
+.summary-card .emoji{font-size:2.5rem;margin-bottom:1rem;display:inline-block;animation:float 3s ease-in-out infinite}
+.summary-card .title{font-size:1.2rem;font-weight:700;margin-bottom:.75rem}
+.summary-card.model .title{color:var(--color-model)}
+.summary-card.tool .title{color:var(--color-tool)}
+.summary-card.agent .title{color:var(--color-agent)}
+.summary-card .desc{font-size:.9rem;color:var(--text-secondary);line-height:1.7}
+
+.summary-quote{
+  font-size:clamp(1rem,2vw,1.25rem);line-height:2;
+  color:var(--text-primary);padding:2rem;
+  border-radius:20px;background:var(--bg-card);
+  border:1px solid rgba(255,255,255,.05);
+  position:relative;
+}
+.summary-quote::before{
+  content:'"';position:absolute;top:-10px;left:20px;
+  font-size:4rem;color:var(--text-muted);opacity:.3;
+  font-family:Georgia,serif;
+}
+.summary-quote .hl-model{color:var(--color-model);font-weight:700}
+.summary-quote .hl-tool{color:var(--color-tool);font-weight:700}
+.summary-quote .hl-agent{color:var(--color-agent);font-weight:700}
+
+/* ===== 建议区域 ===== */
+.advice-section{padding:5rem 2rem;max-width:900px;margin:0 auto}
+.advice-list{display:flex;flex-direction:column;gap:1.5rem}
+.advice-item{
+  display:flex;gap:1.25rem;padding:1.5rem;
+  border-radius:16px;background:var(--bg-card);
+  border:1px solid rgba(255,255,255,.05);
+  transition:all .3s ease;align-items:flex-start;
+}
+.advice-item:hover{transform:translateX(8px);border-color:rgba(255,255,255,.12)}
+.advice-num{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;font-weight:700;flex-shrink:0;
+}
+.advice-item:nth-child(1) .advice-num{background:var(--color-model-bg);color:var(--color-model)}
+.advice-item:nth-child(2) .advice-num{background:var(--color-tool-bg);color:var(--color-tool)}
+.advice-item:nth-child(3) .advice-num{background:var(--color-agent-bg);color:var(--color-agent)}
+.advice-content .title{font-size:1rem;font-weight:700;margin-bottom:.5rem;color:var(--text-primary)}
+.advice-content .desc{font-size:.9rem;color:var(--text-secondary);line-height:1.7}
+
+/* ===== 推荐清单表格 ===== */
+.recommend-section{padding:5rem 2rem;max-width:900px;margin:0 auto}
+.recommend-table-wrapper{overflow-x:auto;border-radius:16px;border:1px solid rgba(255,255,255,.08)}
+.recommend-table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:500px}
+.recommend-table th{padding:1rem 1.25rem;text-align:left;font-weight:700;background:var(--bg-card)}
+.recommend-table th:nth-child(1){color:var(--text-muted);font-size:.85rem}
+.recommend-table td{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,.05);color:var(--text-secondary)}
+.recommend-table td:first-child{font-weight:600}
+.recommend-table td:nth-child(1){color:var(--color-model)}
+.recommend-table td:nth-child(4){color:var(--text-muted);font-size:.85rem}
+.recommend-table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ===== Footer ===== */
+.footer{text-align:center;padding:4rem 2rem 3rem;color:var(--text-muted);font-size:.9rem}
+.footer .thanks{font-size:1.1rem;color:var(--text-secondary);margin-bottom:1rem}
+
+/* ===== 分割线动画 ===== */
+.divider{
+  display:flex;align-items:center;justify-content:center;
+  gap:1rem;margin:2rem 0;
+}
+.divider .line{height:1px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent)}
+.divider .dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted)}
+
+/* ===== 响应式 ===== */
+@media(max-width:640px){
+  .section,.analogy-section,.comparison-section,.prompt-section,.summary-section,.advice-section,.recommend-section{padding:3rem 1rem}
+  .product-card{padding:1.75rem 1.25rem}
+  .nav-dots{display:none}
+  .hero-meta{flex-direction:column;gap:.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部进度条 -->
+<div id="progress-bar"></div>
+
+<!-- 右侧导航点 -->
+<div id="nav-dots">
+  <a href="#hero" class="nav-dot active" data-section="hero"></a>
+  <a href="#opening" class="nav-dot" data-section="opening"></a>
+  <a href="#products" class="nav-dot" data-section="products"></a>
+  <a href="#analogy" class="nav-dot" data-section="analogy"></a>
+  <a href="#comparison" class="nav-dot" data-section="comparison"></a>
+  <a href="#prompt" class="nav-dot" data-section="prompt"></a>
+  <a href="#summary" class="nav-dot" data-section="summary"></a>
+  <a href="#advice" class="nav-dot" data-section="advice"></a>
+</div>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="hero">
+  <span class="float-emoji">🧠</span>
+  <span class="float-emoji">🛠️</span>
+  <span class="float-emoji">🤖</span>
+  <span class="float-emoji">💡</span>
+  <span class="float-emoji">⚡</span>
+  <span class="float-emoji">🚀</span>
+  <div class="hero-content">
+    <span class="hero-badge">AI 学习分享 · 10分钟快速入门</span>
+    <h1>AI产品三类形态解析<br>与学习分享</h1>
+    <p class="hero-subtitle">大模型 · AI工具 · AI Agent</p>
+    <p class="hero-subtitle" style="font-size:.95rem;color:var(--text-muted)">通俗易懂，少讲概念，多讲例子</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="emoji">⏱️</span> 演讲时长：约10分钟</div>
+      <div class="hero-meta-item"><span class="emoji">👥</span> 目标听众：全体想了解AI的同事</div>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">向下滚动开始<div class="arrow">↓</div></div>
+</section>
+
+<!-- ===== 开场白 ===== -->
+<section class="opening" id="opening">
+  <div class="reveal">
+    <span class="section-tag" style="background:var(--color-model-bg);color:var(--color-model)">开场</span>
+  </div>
+  <p class="opening-text reveal reveal-delay-1">
+    大家好。今天用10分钟，帮大家把现在市面上最火的三类AI产品理清楚：<br>
+    <span class="opening-highlight">大模型</span>、<span class="opening-highlight-2">AI编程/生产工具</span>、<span class="opening-highlight-3">AI Agent（智能体）</span>。<br><br>
+    很多人会把它们搞混，甚至以为它们是同一种东西。<br>
+    听完今天这10分钟，保证大家能分得一清二楚，而且知道什么时候该用哪一种。
+  </p>
+</section>
+
+<!-- ===== 三类产品详解 ===== -->
+<section class="section" id="products">
+  <div class="reveal" style="text-align:center;margin-bottom:3rem">
+    <span class="section-tag" style="background:rgba(255,255,255,.06);color:var(--text-secondary)">核心内容</span>
+    <h2 class="section-title">三类产品分别是什么</h2>
+    <p class="section-desc" style="margin:0 auto">逐一拆解，用最通俗的语言讲清楚每一类</p>
+  </div>
+
+  <div class="products">
+    <!-- 大模型 -->
+    <div class="product-card model reveal">
+      <div class="product-header">
+        <div class="product-icon">🧠</div>
+        <div class="product-title-group">
+          <div class="product-number">TYPE 01</div>
+          <div class="product-title">大模型</div>
+          <div class="product-nickname">"最强大脑"</div>
+        </div>
+      </div>
+      <div class="product-representatives">
+        <span class="rep-tag">GPT-4o / GPT-4.1</span>
+        <span class="rep-tag">DeepSeek-V3 / R1</span>
+        <span class="rep-tag">Claude 3.7 Sonnet</span>
+        <span class="rep-tag">Kimi</span>
+        <span class="rep-tag">通义千问</span>
+      </div>
+      <div class="product-definition">
+        大模型就像是一个读过全人类几乎所有公开书籍、论文、网页的"超级大脑"，它的核心能力就是<strong>理解你说的话，然后生成高质量的回答</strong>。
+      </div>
+      <div class="product-section-label">✦ 它能干什么</div>
+      <ul class="feature-list">
+        <li>回答问题、写文章、写邮件、做翻译</li>
+        <li>分析文档、总结长文、提炼要点</li>
+        <li>写诗、编故事、头脑风暴</li>
+        <li>写代码片段、解释技术概念、辅助Debug</li>
+      </ul>
+      <div class="product-section-label">✦ 使用场景举例</div>
+      <ul class="scenario-list">
+        <li>📄 你有一份50页的行业报告，扔给Kimi，让它3分钟给你总结核心结论</li>
+        <li>📧 你要给客户写一封英文邮件，让DeepSeek帮你起草并润色</li>
+        <li>💡 你想快速了解"区块链是什么"，问GPT，它会用大白话给你讲清楚</li>
+      </ul>
+      <div class="key-feature">
+        <span class="icon">🔑</span>
+        <span class="text"><strong>关键特点：</strong>它只负责"说"和"想"，<strong>不会替你动手做事</strong>。你问它一个问题，它给你一个答案，到此为止。它不会去帮你打开Excel、不会去帮你发邮件、不会去帮你查数据库。</span>
+      </div>
+    </div>
+
+    <!-- AI工具 -->
+    <div class="product-card tool reveal">
+      <div class="product-header">
+        <div class="product-icon">🛠️</div>
+        <div class="product-title-group">
+          <div class="product-number">TYPE 02</div>
+          <div class="product-title">AI工具</div>
+          <div class="product-nickname">"你的AI助手 / 副驾"</div>
+        </div>
+      </div>
+      <div class="product-representatives">
+        <span class="rep-tag">Trae（字节跳动）</span>
+        <span class="rep-tag">Claude Code（Anthropic）</span>
+        <span class="rep-tag">GitHub Copilot / Codex</span>
+        <span class="rep-tag">Cursor</span>
+        <span class="rep-tag">Windsurf</span>
+        <span class="rep-tag">通义灵码</span>
+      </div>
+      <div class="product-definition">
+        AI工具是<strong>装在你电脑里、和你的工作软件深度融合的AI助手</strong>。它不只是"回答问题"，而是<strong>直接帮你干活</strong>。
+      </div>
+      <div class="product-section-label">✦ 它能干什么</div>
+      <ul class="feature-list">
+        <li>你写代码时，它自动补全下一行，甚至直接生成整个函数</li>
+        <li>你描述一个需求，它直接在你的项目里创建文件、写代码、跑测试</li>
+        <li>你遇到Bug，把报错信息发给它，它直接在你的代码里定位问题并修改</li>
+        <li>你上传一张设计图，它直接帮你生成对应的网页代码</li>
+      </ul>
+      <div class="product-section-label">✦ 使用场景举例</div>
+      <ul class="scenario-list">
+        <li>🐍 你对Trae说："帮我写一个Python脚本，把文件夹里所有Excel合并成一个"——它直接在编辑器里创建文件、写好代码、甚至帮你运行测试</li>
+        <li>🔧 你对Claude Code说："这个API接口返回的数据结构变了，帮我把所有用到这个接口的地方都改一下"——它会自动搜索整个代码库，逐文件修改</li>
+        <li>🎨 你在Cursor里写前端页面，说"把这个按钮改成渐变色，再加个hover效果"——它直接在代码里改好，你能立刻看到效果</li>
+      </ul>
+      <div class="key-feature">
+        <span class="icon">🔑</span>
+        <span class="text"><strong>关键特点：</strong>AI工具的核心是<strong>"动手"</strong>。它不是给你一段文字让你自己去复制粘贴，而是<strong>直接在你的工作环境里操作</strong>，帮你写文件、改代码、跑命令。</span>
+      </div>
+    </div>
+
+    <!-- AI Agent -->
+    <div class="product-card agent reveal">
+      <div class="product-header">
+        <div class="product-icon">🤖</div>
+        <div class="product-title-group">
+          <div class="product-number">TYPE 03</div>
+          <div class="product-title">AI Agent</div>
+          <div class="product-nickname">"AI员工 / AI代理人"</div>
+        </div>
+      </div>
+      <div class="product-representatives">
+        <span class="rep-tag">Open Claw</span>
+        <span class="rep-tag">WorkBuddy</span>
+        <span class="rep-tag">QClaw（字节）</span>
+        <span class="rep-tag">扣子 Coze</span>
+        <span class="rep-tag">AutoGPT</span>
+        <span class="rep-tag">Devin（Cognition Labs）</span>
+      </div>
+      <div class="product-definition">
+        AI Agent是<strong>能自主规划、自主执行、自主完成多步骤任务的AI</strong>。你给它一个目标，它会自己拆解任务、自己决定用什么工具、自己一步步执行，直到完成。
+      </div>
+      <div class="product-section-label">✦ 它能干什么</div>
+      <ul class="feature-list">
+        <li>"帮我调研一下新能源汽车行业最近三个月的融资情况，做成一份PPT"——它会自己搜索新闻、查Crunchbase、整理数据、生成PPT</li>
+        <li>"帮我把这周的所有会议纪要按照项目分类整理，发给对应的项目负责人"——它会自己读取日历、读取文档、分类、写邮件、发送</li>
+        <li>"帮我订一张下周二去上海的机票，下午2点到5点之间，东航优先"——它会自己打开订票网站、搜索、比较、填写信息、完成预订</li>
+      </ul>
+      <div class="product-section-label">✦ 使用场景举例</div>
+      <ul class="scenario-list">
+        <li>📊 市场部的同事需要对10个竞品做深度分析。给Agent一个指令，它会自动访问竞品官网、下载产品手册、搜索新闻报道，最后输出一份结构化的竞品分析报告</li>
+        <li>📋 销售助理每天需要整理CRM里的新客户线索，给Agent设置好规则，它会每天自动登录CRM、筛选新客户、查企业信息、写跟进建议，把结果发到你的飞书</li>
+      </ul>
+      <div class="key-feature">
+        <span class="icon">🔑</span>
+        <span class="text"><strong>关键特点：</strong>Agent的核心是<strong>"自主"</strong>。它不只是回答一个问题，也不是只帮你写一个代码文件，而是<strong>像一个实习生一样，接到任务后自己规划步骤、自己调用工具、自己解决问题</strong>，最终交付一个完整的成果。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="line"></div><div class="dot"></div><div class="line"></div></div>
+
+<!-- ===== 装修比喻 ===== -->
+<section class="analogy-section" id="analogy">
+  <div class="analogy-intro reveal">
+    <span class="section-tag" style="background:rgba(255,255,255,.06);color:var(--text-secondary)">生活比喻</span>
+    <h2 class="section-title">用装修房子讲清楚三者的区别</h2>
+    <p class="section-desc" style="margin:0 auto">把这三类AI比作三种不同角色，一听就懂</p>
+  </div>
+
+  <div class="analogy-cards">
+    <div class="analogy-card model reveal">
+      <div class="analogy-emoji">🎨</div>
+      <div class="analogy-role">大模型 = 博学多才的设计师</div>
+      <div class="analogy-desc">
+        你问他："现代简约风格的客厅应该怎么设计？"<br><br>
+        他会滔滔不绝地讲："现代简约讲究少即是多，色调以白灰米为主，家具线条要简洁，可以搭配一些原木元素增加温度..."<br><br>
+        说得非常好，头头是道。<strong>但他只动嘴，不动手。</strong>他不会帮你量房、不会帮你买材料、不会帮你刷墙。
+      </div>
+    </div>
+
+    <div class="analogy-card tool reveal reveal-delay-1">
+      <div class="analogy-emoji">🔨</div>
+      <div class="analogy-role">AI工具 = 你身边的万能工长</div>
+      <div class="analogy-desc">
+        你打开Trae/Cursor，就像工长拿着工具箱站在你旁边。<br><br>
+        你说："把这面墙刷成浅灰色。"<br>
+        工长直接拿起滚筒，自己调漆、自己刷墙，刷完还问你："要不要把对面那面也刷了？"<br><br>
+        <strong>他直接动手，而且是在你的房子里动手。</strong>
+      </div>
+    </div>
+
+    <div class="analogy-card agent reveal reveal-delay-2">
+      <div class="analogy-emoji">🏡</div>
+      <div class="analogy-role">AI Agent = 全案装修管家</div>
+      <div class="analogy-desc">
+        你对管家说："我要把这套房子装修成现代简约风格，预算30万，下月底要入住。"<br><br>
+        管家会自己干这些事：<br>
+        ① 量房、做设计方案<br>
+        ② 去建材市场询价、比价、采购<br>
+        ③ 安排水电工、泥工、木工进场<br>
+        ④ 每天监工、拍照汇报进度<br>
+        ⑤ 验收、打扫卫生、交钥匙<br><br>
+        <strong>你只管说目标，剩下的全是他在操心。</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 核心区别对比表 ===== -->
+<section class="comparison-section" id="comparison">
+  <div class="reveal" style="text-align:center;margin-bottom:2.5rem">
+    <span class="section-tag" style="background:rgba(255,255,255,.06);color:var(--text-secondary)">对比总结</span>
+    <h2 class="section-title">核心区别总结表</h2>
+  </div>
+  <div class="comparison-table-wrapper reveal">
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th class="model">大模型</th>
+          <th class="tool">AI工具</th>
+          <th class="agent">AI Agent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>角色定位</td>
+          <td>博学的设计师</td>
+          <td>万能工长</td>
+          <td>全案管家</td>
+        </tr>
+        <tr>
+          <td>交互方式</td>
+          <td>你问一句，我答一句</td>
+          <td>你下指令，我直接干活</td>
+          <td>你给目标，我自主完成</td>
+        </tr>
+        <tr>
+          <td>是否动手</td>
+          <td>不动手，只给建议</td>
+          <td>直接在你的环境里操作</td>
+          <td>自主调用各种工具完成全流程</td>
+        </tr>
+        <tr>
+          <td>任务范围</td>
+          <td>单次对话，单次回答</td>
+          <td>单个子任务</td>
+          <td>多步骤、跨工具的复杂任务</td>
+        </tr>
+        <tr>
+          <td>主动权</td>
+          <td>你主导，你来问</td>
+          <td>你主导，你来指挥</td>
+          <td>AI主导，它自己规划执行</td>
+        </tr>
+        <tr>
+          <td>使用门槛</td>
+          <td>打开网页就能用</td>
+          <td>需要安装到电脑/IDE</td>
+          <td>通常需要配置或等待邀请</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"><div class="line"></div><div class="dot"></div><div class="line"></div></div>
+
+<!-- ===== 提示词对比 ===== -->
+<section class="prompt-section" id="prompt">
+  <div class="reveal" style="text-align:center;margin-bottom:2rem">
+    <span class="section-tag" style="background:rgba(255,255,255,.06);color:var(--text-secondary)">实战对比</span>
+    <h2 class="section-title">同一个需求，发给三类AI会怎样？</h2>
+  </div>
+  <div class="prompt-scenario reveal">
+    <div class="label">需求</div>
+    <div class="text">做一个员工请假系统的网页</div>
+  </div>
+
+  <div class="prompt-cards">
+    <!-- 大模型 -->
+    <div class="prompt-card model reveal">
+      <div class="prompt-card-header">
+        <span class="badge">大模型</span>
+        <span class="title">比如 DeepSeek / GPT</span>
+      </div>
+      <div class="prompt-box">"帮我写一个员工请假系统的网页代码，要有请假申请表单、审批状态显示、历史记录列表三个页面，用React写。"</div>
+      <div class="prompt-response">
+        <div class="prompt-response-label">它的反应</div>
+        <ol class="prompt-steps">
+          <li class="prompt-step">生成一大段代码（App.js、LeaveForm.js、ApprovalStatus.js...）</li>
+          <li class="prompt-step">给出使用步骤：创建项目 → 安装依赖 → 复制代码 → 运行</li>
+          <li class="prompt-step">代码质量不错，但需要你自己去操作</li>
+        </ol>
+      </div>
+      <div class="prompt-result">📦 结果：你得到了一份"代码说明书"，需要自己创建项目、复制粘贴、安装依赖、运行调试</div>
+    </div>
+
+    <!-- AI工具 -->
+    <div class="prompt-card tool reveal">
+      <div class="prompt-card-header">
+        <span class="badge">AI工具</span>
+        <span class="title">比如 Trae / Claude Code</span>
+      </div>
+      <div class="prompt-box">"在我当前的项目里，创建一个员工请假系统，要有请假申请表单、审批状态显示、历史记录列表三个页面，用React写。"</div>
+      <div class="prompt-response">
+        <div class="prompt-response-label">它的反应</div>
+        <ol class="prompt-steps">
+          <li class="prompt-step">扫描当前项目结构，发现已有React项目</li>
+          <li class="prompt-step">自动创建 LeaveForm.jsx、ApprovalStatus.jsx、HistoryList.jsx</li>
+          <li class="prompt-step">自动修改 App.jsx，加入路由配置</li>
+          <li class="prompt-step">自动运行 npm install react-router-dom</li>
+          <li class="prompt-step">完成后主动告诉你访问路径，等你反馈</li>
+        </ol>
+      </div>
+      <div class="prompt-result">📦 结果：代码已经跑在你的项目里了，打开浏览器就能看，有问题直接在编辑器里接着聊</div>
+    </div>
+
+    <!-- AI Agent -->
+    <div class="prompt-card agent reveal">
+      <div class="prompt-card-header">
+        <span class="badge">AI Agent</span>
+        <span class="title">比如 Manus / OpenAI Operator</span>
+      </div>
+      <div class="prompt-box">"帮我做一个员工请假系统的完整方案，包括前端网页、后端API、数据库设计，部署后能直接用。要支持员工提交请假、主管审批、邮件通知。"</div>
+      <div class="prompt-response">
+        <div class="prompt-response-label">它的反应</div>
+        <ol class="prompt-steps">
+          <li class="prompt-step">分析需求，拆解任务：前端 + 后端 + 数据库 + 邮件服务</li>
+          <li class="prompt-step">规划设计：React + Node.js + SQLite + Nodemailer</li>
+          <li class="prompt-step">自动初始化前后端项目，设计数据库表结构</li>
+          <li class="prompt-step">自动写后端API、前端页面、邮件模板、Docker部署脚本</li>
+          <li class="prompt-step">自己跑一遍流程测试验证</li>
+          <li class="prompt-step">交付：完整项目文件夹 + 部署手册 + 使用说明</li>
+        </ol>
+      </div>
+      <div class="prompt-result">📦 结果：一个完整可运行的系统，从前端到后端到数据库到部署，全部搞定，拿到手就能用</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="line"></div><div class="dot"></div><div class="line"></div></div>
+
+<!-- ===== 总结 ===== -->
+<section class="summary-section" id="summary">
+  <div class="reveal" style="text-align:center;margin-bottom:2.5rem">
+    <span class="section-tag" style="background:rgba(255,255,255,.06);color:var(--text-secondary)">总结</span>
+    <h2 class="section-title">三句话分别总结</h2>
+  </div>
+
+  <div class="summary-cards">
+    <div class="summary-card model reveal">
+      <div class="emoji">🧠</div>
+      <div class="title">大模型</div>
+      <div class="desc">它是最强大脑，你问它答，给你知识和内容，但它<strong>不动手，只动嘴</strong>。</div>
+    </div>
+    <div class="summary-card tool reveal reveal-delay-1">
+      <div class="emoji">🛠️</div>
+      <div class="title">AI工具</div>
+      <div class="desc">它是你的AI副驾，装在你的电脑里，你指挥它，它<strong>直接在你的工作现场动手干活</strong>。</div>
+    </div>
+    <div class="summary-card agent reveal reveal-delay-2">
+      <div class="emoji">🤖</div>
+      <div class="title">AI Agent</div>
+      <div class="desc">它是你的AI员工，你给它一个目标，它<strong>自己拆解任务、调用工具、从头到尾办完</strong>。</div>
+    </div>
+  </div>
+
+  <div class="summary-quote reveal reveal-delay-3">
+    <span class="hl-model">大模型是"会思考的大脑"</span>，<span class="hl-tool">AI工具是"会动手的双手"</span>，<span class="hl-agent">AI Agent是"有大脑+有双手+能自己安排工作"的完整员工</span> —— 它们的本质区别就在于：从"只动嘴"到"动手"再到"自己规划着动手"。
+  </div>
+</section>
+
+<!-- ===== 给同事的建议 ===== -->
+<section class="advice-section" id="advice">
+  <div class="reveal" style="text-align:center;margin-bottom:2.5rem">
+    <span class="section-tag" style="background:rgba(255,255,255,.06);color:var(--text-secondary)">行动建议</span>
+    <h2 class="section-title">给同事的入门建议</h2>
+  </div>
+
+  <div class="advice-list">
+    <div class="advice-item reveal">
+      <div class="advice-num">1</div>
+      <div class="advice-content">
+        <div class="title">所有人 — 先从大模型开始用</div>
+        <div class="desc">DeepSeek、Kimi、GPT，选一个顺手的，每天用来辅助写东西、查资料、总结文档。这是零门槛。</div>
+      </div>
+    </div>
+    <div class="advice-item reveal reveal-delay-1">
+      <div class="advice-num">2</div>
+      <div class="advice-content">
+        <div class="title">技术同事 — 强烈建议装一个Trae或Cursor</div>
+        <div class="desc">它不是一个"更好用的搜索引擎"，而是一个"真的在帮你写代码的同事"。用了就知道效率提升有多大。</div>
+      </div>
+    </div>
+    <div class="advice-item reveal reveal-delay-2">
+      <div class="advice-num">3</div>
+      <div class="advice-content">
+        <div class="title">想尝鲜的同事 — 关注Agent类产品</div>
+        <div class="desc">虽然现在还不算完全成熟，但它代表的方向很明确：<strong>未来的AI不是等你指挥才动，而是你给目标它就自己跑</strong>。早点了解，早点跟上节奏。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 推荐清单 ===== -->
+<section class="recommend-section" id="recommend">
+  <div class="reveal" style="text-align:center;margin-bottom:2.5rem">
+    <span class="section-tag" style="background:rgba(255,255,255,.06);color:var(--text-secondary)">附录</span>
+    <h2 class="section-title">产品推荐清单</h2>
+  </div>
+  <div class="recommend-table-wrapper reveal">
+    <table class="recommend-table">
+      <thead>
+        <tr>
+          <th>类型</th>
+          <th>推荐产品</th>
+          <th>特点</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>大模型</td>
+          <td>DeepSeek、Kimi、GPT-4o</td>
+          <td>通用问答、文档分析</td>
+        </tr>
+        <tr>
+          <td>AI工具</td>
+          <td>Trae、Cursor、Claude Code</td>
+          <td>编程辅助、代码生成</td>
+        </tr>
+        <tr>
+          <td>Agent</td>
+          <td>扣子Coze、Manus、OpenAI Operator</td>
+          <td>自动化任务、流程执行</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <div class="thanks">谢谢大家。10分钟到了，有问题随时交流。🎉</div>
+  <div>AI学习分享 · 2026</div>
+</footer>
+
+<script>
+// ===== 滚动进度条 =====
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+});
+
+// ===== 滚动动画 (Intersection Observer) =====
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -80px 0px'
+};
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, observerOptions);
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ===== 导航点高亮 =====
+const sections = document.querySelectorAll('section[id], div[id="hero"]');
+const navDots = document.querySelectorAll('.nav-dot');
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navDots.forEach(dot => {
+        dot.classList.toggle('active', dot.dataset.section === id);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(sec => navObserver.observe(sec));
+
+// ===== 导航点点击平滑滚动 =====
+navDots.forEach(dot => {
+  dot.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.getElementById(dot.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
