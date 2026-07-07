@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 能力全景图 — 从助手到放大器</title>
+<style>
+  :root {
+    --bg: #f5f0eb;
+    --card-bg: #ffffff;
+    --text: #2c2c2c;
+    --text-light: #5a5a5a;
+    --text-muted: #888;
+    --blue: #4a6cf7;
+    --blue-light: #e8edfe;
+    --blue-dark: #2d4cc8;
+    --green: #20b884;
+    --green-light: #e6f7f2;
+    --orange: #f59e0b;
+    --orange-light: #fef8e7;
+    --purple: #8b5cf6;
+    --purple-light: #f3eeff;
+    --red: #ef4444;
+    --red-light: #fef2f2;
+    --pink: #ec4899;
+    --pink-light: #fdf2f8;
+    --cyan: #06b6d4;
+    --cyan-light: #ecfeff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ====== Hero ====== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    color: #fff;
+  }
+
+  .hero-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) scale(0); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  }
+
+  .hero-content {
+    text-align: center;
+    z-index: 1;
+    padding: 40px 24px;
+    max-width: 800px;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+    animation: fadeInDown 0.8s ease both;
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    animation: fadeInDown 0.8s 0.15s ease both;
+  }
+  .hero h1 .hl { background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .hero p {
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    max-width: 560px;
+    margin: 0 auto 40px;
+    animation: fadeInDown 0.8s 0.3s ease both;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite, fadeInDown 0.8s 0.5s ease both;
+  }
+  .hero-scroll span {
+    display: block;
+    width: 24px;
+    height: 40px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 12px;
+    position: relative;
+  }
+  .hero-scroll span::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 4px;
+    height: 8px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 2px;
+    transform: translateX(-50%);
+    animation: scrollDot 1.5s ease infinite;
+  }
+  @keyframes scrollDot {
+    0%, 100% { top: 6px; opacity: 1; }
+    50% { top: 20px; opacity: 0.3; }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ====== Sections ====== */
+  .section {
+    padding: 80px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .section-label {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding: 4px 14px;
+    border-radius: 50px;
+    margin-bottom: 16px;
+  }
+  .section-header h2 {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+  .section-header .sub {
+    font-size: 16px;
+    color: var(--text-light);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ====== Overview ====== */
+  .overview-section { padding-top: 40px; }
+  .overview-section .section-label { background: var(--blue-light); color: var(--blue); }
+
+  .overview-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .overview-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow);
+    transition: transform var(--transition), box-shadow var(--transition);
+    cursor: default;
+  }
+  .overview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .overview-card .icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .overview-card h3 { font-size: 18px; margin-bottom: 8px; }
+  .overview-card p  { font-size: 14px; color: var(--text-light); line-height: 1.8; }
+
+  /* ====== Domain Cards ====== */
+  .domain-section .section-label { background: var(--green-light); color: var(--green); }
+
+  .domain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 28px;
+  }
+
+  .domain-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition), box-shadow var(--transition);
+    cursor: default;
+  }
+  .domain-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    transition: height 0.3s ease;
+  }
+  .domain-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+  .domain-card:hover::before { height: 100%; opacity: 0.04; }
+
+  .domain-card.model  { --accent: var(--blue); }
+  .domain-card.multi  { --accent: var(--purple); }
+  .domain-card.code   { --accent: var(--cyan); }
+  .domain-card.office { --accent: var(--green); }
+
+  .domain-card.model::before  { background: var(--blue); }
+  .domain-card.multi::before  { background: var(--purple); }
+  .domain-card.code::before   { background: var(--cyan); }
+  .domain-card.office::before { background: var(--green); }
+
+  .d-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .d-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .domain-card.model .d-icon  { background: var(--blue-light); }
+  .domain-card.multi .d-icon  { background: var(--purple-light); }
+  .domain-card.code .d-icon   { background: var(--cyan-light); }
+  .domain-card.office .d-icon { background: var(--green-light); }
+
+  .d-title h3 { font-size: 20px; margin-bottom: 2px; }
+  .d-title span { font-size: 13px; color: var(--text-muted); }
+
+  .d-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .d-tag {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    cursor: default;
+  }
+  .domain-card.model .d-tag  { background: var(--blue-light); color: var(--blue-dark); }
+  .domain-card.multi .d-tag  { background: var(--purple-light); color: var(--purple); }
+  .domain-card.code .d-tag   { background: var(--cyan-light); color: #0e7490; }
+  .domain-card.office .d-tag { background: var(--green-light); color: #0d9488; }
+  .d-tag:hover { transform: scale(1.06); filter: brightness(0.95); }
+
+  .d-detail {
+    margin-top: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.8;
+    display: none;
+  }
+  .domain-card.model .d-detail  { background: #f8faff; }
+  .domain-card.multi .d-detail  { background: #faf8ff; }
+  .domain-card.code .d-detail   { background: #f8feff; }
+  .domain-card.office .d-detail { background: #f8fdfb; }
+
+  .d-detail.show { display: block; animation: slideDown 0.35s ease; }
+  @keyframes slideDown {
+    from { opacity: 0; max-height: 0; }
+    to   { opacity: 1; max-height: 400px; }
+  }
+
+  .d-expand {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  .domain-card.model .d-expand  { color: var(--blue); }
+  .domain-card.multi .d-expand  { color: var(--purple); }
+  .domain-card.code .d-expand   { color: var(--cyan); }
+  .domain-card.office .d-expand { color: var(--green); }
+  .d-expand:hover { opacity: 0.8; }
+  .d-expand .arr {
+    display: inline-block;
+    transition: transform 0.3s;
+    font-size: 11px;
+  }
+  .d-expand.open .arr { transform: rotate(180deg); }
+
+  /* ====== Weakness ====== */
+  .weakness-section .section-label { background: var(--red-light); color: var(--red); }
+
+  .weakness-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 28px;
+  }
+  .weak-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 36px 32px 28px;
+    box-shadow: var(--shadow);
+    border: 1px solid transparent;
+    transition: all var(--transition);
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .weak-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: #fecaca;
+  }
+  .weak-card .warn-stripe {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .weak-card.hallu .warn-stripe { background: linear-gradient(90deg, #fbbf24, #ef4444, #fbbf24); }
+  .weak-card.ctx   .warn-stripe { background: linear-gradient(90deg, #f59e0b, #ef4444, #f59e0b); }
+  .weak-card.bugs  .warn-stripe { background: linear-gradient(90deg, #fb923c, #ef4444, #fb923c); }
+
+  .weak-card .w-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--red-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+  .weak-card h3 { font-size: 18px; margin-bottom: 12px; }
+  .weak-card .w-desc {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .w-suggestion {
+    background: #fefce8;
+    border-left: 3px solid #f59e0b;
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.7;
+  }
+
+  /* ====== Flow ====== */
+  .flow-section .section-label { background: var(--orange-light); color: var(--orange); }
+
+  .flow-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 40px 0;
+  }
+  .flow-node {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px 32px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: all var(--transition);
+    cursor: default;
+  }
+  .flow-node:hover { transform: scale(1.05); box-shadow: var(--shadow-lg); }
+  .flow-node .fn-icon { font-size: 32px; margin-bottom: 8px; }
+  .flow-node .fn-label { font-size: 15px; font-weight: 700; }
+  .flow-node .fn-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .flow-arrow {
+    font-size: 28px;
+    color: var(--text-muted);
+    animation: arrowPulse 1.8s ease infinite;
+  }
+  @keyframes arrowPulse {
+    0%, 100% { opacity: 0.3; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(6px); }
+  }
+
+  /* ====== Summary ====== */
+  .summary-section .section-label { background: var(--pink-light); color: var(--pink); }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+  }
+  .summary-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: all var(--transition);
+    cursor: default;
+  }
+  .summary-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .summary-card .s-num {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 4px;
+  }
+  .summary-card .s-label { font-size: 16px; font-weight: 600; color: var(--text-light); }
+
+  .summary-card.s1 .s-num { color: var(--blue); }
+  .summary-card.s2 .s-num { color: var(--green); }
+  .summary-card.s3 .s-num { color: var(--purple); }
+  .summary-card.s4 .s-num { color: var(--orange); }
+
+  /* ====== CTA ====== */
+  .cta-section {
+    text-align: center;
+    padding: 80px 24px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    color: #fff;
+    margin-top: 40px;
+  }
+  .cta-section h2 { font-size: 28px; margin-bottom: 12px; }
+  .cta-section p  { color: rgba(255,255,255,0.6); max-width: 500px; margin: 0 auto 32px; }
+
+  .cta-pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .cta-pill {
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+    cursor: default;
+    transition: all 0.3s;
+  }
+  .cta-pill:hover {
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.4);
+    transform: translateY(-2px);
+  }
+
+  /* ====== Tooltip ====== */
+  .tooltip-trigger {
+    position: relative;
+    border-bottom: 1px dashed currentColor;
+    cursor: help;
+  }
+  .tooltip-trigger:hover .tooltip-pop {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .tooltip-pop {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+    z-index: 10;
+  }
+  .tooltip-pop::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1e293b;
+  }
+
+  /* ====== Scroll Reveal ====== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ====== Progress Bar ====== */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--purple), var(--pink));
+    z-index: 1000;
+    transition: width 0.1s linear;
+  }
+
+  /* ====== Footer ====== */
+  footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* ====== Pulse ring ====== */
+  .pulse-ring {
+    display: inline-block;
+    position: relative;
+  }
+  .pulse-ring::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    opacity: 0;
+    animation: pulseRing 2s ease-out infinite;
+  }
+  @keyframes pulseRing {
+    0%   { transform: scale(1);   opacity: 0.5; }
+    100% { transform: scale(1.8); opacity: 0;   }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .section { padding: 48px 16px; }
+    .domain-grid, .weakness-grid { grid-template-columns: 1fr; }
+    .flow-visual { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    @keyframes arrowPulse {
+      0%, 100% { opacity: 0.3; transform: rotate(90deg) translateX(0); }
+      50% { opacity: 1; transform: rotate(90deg) translateX(6px); }
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ====== HERO ====== -->
+<section class="hero">
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ AI 能力全景解读</div>
+    <h1>AI，不只是工具<br>是你的<span class="hl">能力放大器</span></h1>
+    <p>在给定的框架内，提供准确的要求和参数，AI 能让你的效率倍增。它擅长什么、局限在哪——这里有一张完整的地图。</p>
+  </div>
+  <div class="hero-scroll"><span></span></div>
+</section>
+
+<!-- ====== OVERVIEW ====== -->
+<section class="section overview-section">
+  <div class="section-header reveal">
+    <div class="section-label">核心定位</div>
+    <h2>AI = 辅助助手 × 能力放大器</h2>
+    <p class="sub">它不是替代你的决策者，而是在你定义的框架内，将意图转化为结果的「催化剂」。</p>
+  </div>
+  <div class="overview-cards">
+    <div class="overview-card reveal">
+      <div class="icon-wrap" style="background:var(--blue-light);">🎯</div>
+      <h3>框架驱动</h3>
+      <p>你设定目标、边界和约束条件，AI 在框架内高效执行。框架越清晰，输出越精准。</p>
+    </div>
+    <div class="overview-card reveal">
+      <div class="icon-wrap" style="background:var(--green-light);">⚡</div>
+      <h3>效率倍增器</h3>
+      <p>将重复性劳动、格式化产出交给 AI，把精力留给真正需要人类判断和创造力的核心环节。</p>
+    </div>
+    <div class="overview-card reveal">
+      <div class="icon-wrap" style="background:var(--purple-light);">🔧</div>
+      <h3>参数敏感</h3>
+      <p>输入决定输出质量。明确的参数、清晰的 prompt，是高质量 AI 产出的前提，而非「随便说说就行」。</p>
+    </div>
+    <div class="overview-card reveal">
+      <div class="icon-wrap" style="background:var(--orange-light);">🧠</div>
+      <h3>人机协作</h3>
+      <p>AI 负责「执行」，你负责「判断」。最终决策权始终在你手中——AI 提供选项，你做选择。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== DOMAINS ====== -->
+<section class="section domain-section">
+  <div class="section-header reveal">
+    <div class="section-label">四大擅长领域</div>
+    <h2>AI 的能力矩阵</h2>
+    <p class="sub">从代码到创意，从模型到文档——这四个领域是 AI 当前最突出的「舒适区」。</p>
+  </div>
+
+  <div class="domain-grid">
+    <!-- Model / Agent -->
+    <div class="domain-card model reveal">
+      <div class="d-header">
+        <div class="d-icon">🤖</div>
+        <div class="d-title">
+          <h3>模型 / Agent</h3>
+          <span>智能体的核心能力</span>
+        </div>
+      </div>
+      <div class="d-tags">
+        <span class="d-tag">陌生领域快速入门</span>
+        <span class="d-tag">RAG 知识增强</span>
+        <span class="d-tag">批量执行</span>
+        <span class="d-tag">Prompt 工程</span>
+      </div>
+      <button class="d-expand" onclick="toggleDetail(this)" aria-label="展开详情">
+        了解更多 <span class="arr">▾</span>
+      </button>
+      <div class="d-detail">
+        <p><strong>陌生领域知识快速入门：</strong>面对一个全新的行业或技术栈，AI 能在几分钟内帮你建立基本认知框架，梳理关键概念、术语和行业格局。</p>
+        <p style="margin-top:10px;"><strong>批量执行场景：</strong>对于输入输出参数明确、规则清晰的任务——比如数据清洗、格式转换、批量翻译——Agent 可以像流水线一样高效处理。</p>
+        <p style="margin-top:10px;"><strong>典型应用：</strong>智能客服、知识库问答、自动化报告生成、代码审查 Agent。</p>
+      </div>
+    </div>
+
+    <!-- Multimodal -->
+    <div class="domain-card multi reveal">
+      <div class="d-header">
+        <div class="d-icon">🎨</div>
+        <div class="d-title">
+          <h3>多模态生成</h3>
+          <span>从文字到视觉世界</span>
+        </div>
+      </div>
+      <div class="d-tags">
+        <span class="d-tag">文生文 / 文生图</span>
+        <span class="d-tag">文生视频</span>
+        <span class="d-tag">AI 短剧 / 漫剧</span>
+        <span class="d-tag">图片识别</span>
+      </div>
+      <button class="d-expand" onclick="toggleDetail(this)" aria-label="展开详情">
+        了解更多 <span class="arr">▾</span>
+      </button>
+      <div class="d-detail">
+        <p><strong>文生文与内容加工：</strong>文本生成、表格处理、PPT 制作、信息汇总、要点提炼——从海量资料到结构化输出，一气呵成。</p>
+        <p style="margin-top:10px;"><strong>视觉生成：</strong>图片生成与识别已进入实用阶段；AI 短剧和漫剧正在开辟全新的内容创作赛道，大幅降低视频制作门槛。</p>
+        <p style="margin-top:10px;"><strong>典型应用：</strong>营销素材批量生成、产品宣传片、教学动画、社交媒体视觉内容。</p>
+      </div>
+    </div>
+
+    <!-- Programming -->
+    <div class="domain-card code reveal">
+      <div class="d-header">
+        <div class="d-icon">💻</div>
+        <div class="d-title">
+          <h3>编程</h3>
+          <span>开发效率的飞跃</span>
+        </div>
+      </div>
+      <div class="d-tags">
+        <span class="d-tag">代码生成 / 补全</span>
+        <span class="d-tag">Bug 排查</span>
+        <span class="d-tag">新技术快速上手</span>
+        <span class="d-tag">重构优化</span>
+      </div>
+      <button class="d-expand" onclick="toggleDetail(this)" aria-label="展开详情">
+        了解更多 <span class="arr">▾</span>
+      </button>
+      <div class="d-detail">
+        <p><strong>代码生成与补全：</strong>从函数级补全到整个模块的搭建，AI 能显著减少「搬砖」时间。但请记住：<em>AI 写的代码需要你来审查。</em></p>
+        <p style="margin-top:10px;"><strong>Bug 排查：</strong>把报错信息扔给 AI，它能快速定位问题根源，给出修复建议——尤其适合不熟悉的语言和框架。</p>
+        <p style="margin-top:10px;"><strong>新技术上手：</strong>学习新语言、新框架时，AI 是贴身导师，能根据你的水平提供定制化的示例和解释。</p>
+      </div>
+    </div>
+
+    <!-- Office -->
+    <div class="domain-card office reveal">
+      <div class="d-header">
+        <div class="d-icon">📊</div>
+        <div class="d-title">
+          <h3>办公效率</h3>
+          <span>文档处理的自动化</span>
+        </div>
+      </div>
+      <div class="d-tags">
+        <span class="d-tag">文本生成</span>
+        <span class="d-tag">表格处理</span>
+        <span class="d-tag">PPT 制作</span>
+        <span class="d-tag">信息汇总 / 摘要</span>
+      </div>
+      <button class="d-expand" onclick="toggleDetail(this)" aria-label="展开详情">
+        了解更多 <span class="arr">▾</span>
+      </button>
+      <div class="d-detail">
+        <p><strong>文档全流程覆盖：</strong>从撰写、排版、翻译到校对——AI 可以让一份专业文档的产出时间从数天压缩到数小时。</p>
+        <p style="margin-top:10px;"><strong>数据驱动的洞察：</strong>将原始数据转化为可视化图表、趋势分析和决策建议，让「数据说话」变得前所未有的简单。</p>
+        <p style="margin-top:10px;"><strong>信息压缩与提取：</strong>面对几十页的报告或会议纪要，AI 能在几秒内提炼出关键要点和行动项。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== FLOW ====== -->
+<section class="section flow-section">
+  <div class="section-header reveal">
+    <div class="section-label">工作范式</div>
+    <h2>从「手工」到「人机协作」</h2>
+    <p class="sub">AI 改变了工作流的本质形态——不是替换某个环节，而是重塑整条链路。</p>
+  </div>
+  <div class="flow-visual reveal">
+    <div class="flow-node">
+      <div class="fn-icon">📝</div>
+      <div class="fn-label">定义框架</div>
+      <div class="fn-sub">明确目标与边界</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-icon">🎯</div>
+      <div class="fn-label">输入参数</div>
+      <div class="fn-sub">精准 Prompt 与数据</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="border: 2px solid var(--blue);">
+      <div class="fn-icon pulse-ring" style="color:var(--blue);">⚡</div>
+      <div class="fn-label" style="color:var(--blue);">AI 执行</div>
+      <div class="fn-sub">效率倍增的核心环节</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-icon">👁️</div>
+      <div class="fn-label">人工审查</div>
+      <div class="fn-sub">判断、修正、把关</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="fn-icon">✅</div>
+      <div class="fn-label">交付结果</div>
+      <div class="fn-sub">高质量最终产出</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== WEAKNESSES ====== -->
+<section class="section weakness-section">
+  <div class="section-header reveal">
+    <div class="section-label">不足与风险</div>
+    <h2>AI 目前还搞不定的三件事</h2>
+    <p class="sub">了解边界，比了解能力更重要——这些「坑」你需要提前知道。</p>
+  </div>
+
+  <div class="weakness-grid">
+    <!-- Hallucination -->
+    <div class="weak-card hallu reveal">
+      <div class="warn-stripe"></div>
+      <div class="w-icon">⚠️</div>
+      <h3>幻觉问题 — 精确数据不可靠</h3>
+      <p class="w-desc">
+        AI 在需要<span class="tooltip-trigger">精确数据<span class="tooltip-pop">统计数据、财务数字、法律条文、历史日期等</span></span>的任务中可信度不高。它会「自信地」编造事实、虚构引用、捏造数据——而这一切看起来都像是真的。<br><br>
+        <strong>根本原因：</strong>大模型本质是「概率预测下一个 token」，不是「检索事实」。它更擅长生成<em>看起来合理</em>的内容，而非<em>事实上正确</em>的内容。
+      </p>
+      <div class="w-suggestion">
+        <strong>应对策略：</strong>涉及精确数据时，主动要求 AI 标注信息来源；关键事实必须二次核实；搭配 RAG（检索增强生成）可显著降低幻觉率。
+      </div>
+    </div>
+
+    <!-- Context -->
+    <div class="weak-card ctx reveal">
+      <div class="warn-stripe"></div>
+      <div class="w-icon">📏</div>
+      <h3>上下文限制 — 长链条任务容错率低</h3>
+      <p class="w-desc">
+        当前模型的上下文窗口虽然在不断扩大，但在压缩上下文时<strong>仍容易丢失关键信息</strong>。对于需要多步推理、跨文件协作的复杂长链条任务，中间环节的微小偏差会在后续步骤中被放大。<br><br>
+        <strong>典型表现：</strong>处理到后半段时「忘记」了前面的约束条件；多轮对话中逐渐偏离初始目标；长文档处理时遗漏关键段落。
+      </p>
+      <div class="w-suggestion">
+        <strong>应对策略：</strong>将大任务拆解为独立小任务，每步输出后人工确认；关键约束在每轮对话中重申；善用外部记忆（文件、数据库）作为状态锚点。
+      </div>
+    </div>
+
+    <!-- Code Quality -->
+    <div class="weak-card bugs reveal">
+      <div class="warn-stripe"></div>
+      <div class="w-icon">🐛</div>
+      <h3>编程「快但不好」 — 隐性质量问题突出</h3>
+      <p class="w-desc">
+        AI 写代码确实快，但<strong>质量参差不齐</strong>。它经常忽略边界条件、异常处理和安全漏洞，甚至会<span class="tooltip-trigger">虚构 API 参数<span class="tooltip-pop">编造不存在的函数签名、参数名或返回值</span></span>、调用不存在的接口。<br><br>
+        <strong>三个高频问题：</strong>① 空值/边界不处理 ② SQL 注入 / XSS 漏洞 ③ 使用已废弃或幻觉生成的 API。
+      </p>
+      <div class="w-suggestion">
+        <strong>应对策略：</strong>AI 生成的代码必须经过 Code Review；关键逻辑编写单元测试；使用静态分析工具（ESLint / SonarQube）做第一道防线；安全敏感代码必须人工把关。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SUMMARY ====== -->
+<section class="section summary-section">
+  <div class="section-header reveal">
+    <div class="section-label">记住这几点</div>
+    <h2>用好 AI 的核心心法</h2>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-card s1 reveal">
+      <div class="s-num">01</div>
+      <div class="s-label">框架先行</div>
+      <p style="font-size:13px;color:var(--text-light);margin-top:8px;">越清晰的边界，越好的输出</p>
+    </div>
+    <div class="summary-card s2 reveal">
+      <div class="s-num">02</div>
+      <div class="s-label">参数为王</div>
+      <p style="font-size:13px;color:var(--text-light);margin-top:8px;">Prompt 的质量决定结果的上限</p>
+    </div>
+    <div class="summary-card s3 reveal">
+      <div class="s-num">03</div>
+      <div class="s-label">人机互补</div>
+      <p style="font-size:13px;color:var(--text-light);margin-top:8px;">AI 执行，人类判断——各司其职</p>
+    </div>
+    <div class="summary-card s4 reveal">
+      <div class="s-num">04</div>
+      <div class="s-label">持续校验</div>
+      <p style="font-size:13px;color:var(--text-light);margin-top:8px;">永远不要完全信任 AI 的「事实」输出</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CTA ====== -->
+<section class="cta-section">
+  <h2 class="reveal">AI 不是终点，而是新起点</h2>
+  <p class="reveal">真正的高手，不是最会用 AI 的人，而是最懂得<strong>在什么场景下用、在什么环节停</strong>的人。</p>
+  <div class="cta-pills reveal">
+    <span class="cta-pill">🎯 定义框架</span>
+    <span class="cta-pill">📐 给定参数</span>
+    <span class="cta-pill">⚡ 效率倍增</span>
+    <span class="cta-pill">👁️ 人工把关</span>
+    <span class="cta-pill">🔄 持续迭代</span>
+  </div>
+</section>
+
+<footer>
+  AI 能力全景图 · 2026 · 保持学习，保持清醒
+</footer>
+
+<script>
+// ===== Particle System =====
+(function() {
+  const container = document.getElementById('particles');
+  const colors = ['rgba(255,255,255,0.06)','rgba(255,255,255,0.04)','rgba(100,180,255,0.08)','rgba(180,140,255,0.06)'];
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    const size = Math.random() * 80 + 20;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDuration = (Math.random() * 18 + 10) + 's';
+    p.style.animationDelay = (Math.random() * 15) + 's';
+    container.appendChild(p);
+  }
+})();
+
+// ===== Scroll Progress =====
+(function() {
+  const bar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    bar.style.width = progress + '%';
+  });
+})();
+
+// ===== Scroll Reveal =====
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+})();
+
+// ===== Expand Detail =====
+function toggleDetail(btn) {
+  const detail = btn.parentElement.querySelector('.d-detail');
+  const isOpen = detail.classList.contains('show');
+  detail.classList.toggle('show');
+  if (isOpen) {
+    btn.classList.remove('open');
+    btn.innerHTML = '了解更多 <span class="arr">▾</span>';
+  } else {
+    btn.classList.add('open');
+    btn.innerHTML = '收起 <span class="arr">▾</span>';
+  }
+}
+
+// ===== Parallax Tilt on Domain Cards =====
+document.querySelectorAll('.domain-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / centerY * -6;
+    const rotateY = (x - centerX) / centerX * 6;
+    card.style.transform = `translateY(-6px) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// ===== Weakness Card Shake on hover =====
+document.querySelectorAll('.weak-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    card.style.animation = 'shake 0.4s ease';
+    setTimeout(() => { card.style.animation = ''; }, 400);
+  });
+});
+
+// Inject shake keyframes
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-2px); }
+  }
+`;
+document.head.appendChild(shakeStyle);
+</script>
+
+</body>
+</html>
