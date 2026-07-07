@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI产品三类形态解析与学习分享</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --bg-card: #1a1d27;
+    --bg-card-hover: #22263a;
+    --text: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --accent-brain: #5b8dee;
+    --accent-tool: #34a853;
+    --accent-agent: #ea8600;
+    --accent-highlight: #ff6b9d;
+    --glow-brain: rgba(91, 141, 238, 0.3);
+    --glow-tool: rgba(52, 168, 83, 0.3);
+    --glow-agent: rgba(234, 134, 0, 0.3);
+    --border: rgba(255,255,255,0.08);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ========== Particle Background ========== */
+  #particles-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* ========== Navigation ========== */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    background: rgba(15,17,23,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    transition: all 0.3s;
+  }
+  nav .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  nav .logo { font-weight: 700; font-size: 1rem; color: var(--accent-highlight); letter-spacing: 0.5px; }
+  nav .nav-links { display: flex; gap: 20px; list-style: none; }
+  nav .nav-links a {
+    color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;
+    transition: color 0.3s; padding: 4px 0;
+  }
+  nav .nav-links a:hover, nav .nav-links a.active { color: var(--text); }
+
+  /* ========== Sections ========== */
+  .section {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 100px 24px 80px;
+  }
+  .section-title {
+    font-size: 2.2rem; font-weight: 900; text-align: center;
+    margin-bottom: 16px; letter-spacing: 1px;
+    background: linear-gradient(135deg, #5b8dee, #ff6b9d);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .section-subtitle {
+    text-align: center; color: var(--text-secondary); font-size: 1rem;
+    margin-bottom: 56px;
+  }
+
+  /* ========== Hero ========== */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 120px 24px 80px;
+  }
+  .hero-badge {
+    display: inline-block; background: rgba(255,107,157,0.12); color: var(--accent-highlight);
+    padding: 6px 18px; border-radius: 50px; font-size: 0.8rem; font-weight: 500;
+    margin-bottom: 28px; letter-spacing: 1px;
+    animation: fadeInDown 0.8s ease;
+  }
+  .hero h1 {
+    font-size: 3.4rem; font-weight: 900; line-height: 1.3; margin-bottom: 20px;
+    animation: fadeInUp 0.8s ease;
+  }
+  .hero h1 .gradient-text {
+    background: linear-gradient(135deg, #5b8dee, #a855f7, #ff6b9d);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto 40px;
+    animation: fadeInUp 0.8s ease 0.15s both;
+  }
+  .hero .hero-icons {
+    display: flex; gap: 40px; justify-content: center; margin-bottom: 48px;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+  .hero .hero-icon-item {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .hero .hero-icon-circle {
+    width: 72px; height: 72px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    transition: all 0.4s; cursor: pointer;
+  }
+  .hero .hero-icon-circle.brain { background: rgba(91,141,238,0.15); box-shadow: 0 0 40px var(--glow-brain); }
+  .hero .hero-icon-circle.tool { background: rgba(52,168,83,0.15); box-shadow: 0 0 40px var(--glow-tool); }
+  .hero .hero-icon-circle.agent { background: rgba(234,134,0,0.15); box-shadow: 0 0 40px var(--glow-agent); }
+  .hero .hero-icon-circle:hover { transform: translateY(-8px) scale(1.08); }
+  .hero .hero-icon-label { font-size: 0.85rem; font-weight: 500; }
+
+  .scroll-indicator {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    animation: bounce 2s infinite;
+  }
+  .scroll-indicator svg { opacity: 0.5; }
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-12px); }
+    60% { transform: translateX(-50%) translateY(-6px); }
+  }
+
+  /* ========== Cards Grid ========== */
+  .cards-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  @media (max-width: 900px) { .cards-grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px 24px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+    cursor: pointer; position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(40px);
+  }
+  .card.visible { opacity: 1; transform: translateY(0); }
+  .card::before {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, var(--glow-color, transparent) 0%, transparent 70%);
+    opacity: 0; transition: opacity 0.5s;
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .card.brain-card { --glow-color: var(--glow-brain); border-top: 3px solid var(--accent-brain); }
+  .card.tool-card { --glow-color: var(--glow-tool); border-top: 3px solid var(--accent-tool); }
+  .card.agent-card { --glow-color: var(--glow-agent); border-top: 3px solid var(--accent-agent); }
+
+  .card-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; margin-bottom: 16px;
+    transition: transform 0.3s;
+  }
+  .card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
+  .brain-card .card-icon { background: rgba(91,141,238,0.15); }
+  .tool-card .card-icon { background: rgba(52,168,83,0.15); }
+  .agent-card .card-icon { background: rgba(234,134,0,0.15); }
+
+  .card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+  .card .card-tagline { font-size: 0.85rem; font-weight: 500; margin-bottom: 16px; color: var(--text-secondary); }
+  .brain-card .card-tagline { color: var(--accent-brain); }
+  .tool-card .card-tagline { color: var(--accent-tool); }
+  .agent-card .card-tagline { color: var(--accent-agent); }
+
+  .card .product-list {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+  }
+  .card .product-tag {
+    font-size: 0.72rem; padding: 4px 10px; border-radius: 50px;
+    background: rgba(255,255,255,0.05); color: var(--text-secondary);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.3s;
+  }
+  .card:hover .product-tag { background: rgba(255,255,255,0.08); color: var(--text); }
+
+  .card ul { list-style: none; font-size: 0.9rem; }
+  .card ul li { padding: 6px 0; color: var(--text-secondary); position: relative; padding-left: 18px; }
+  .card ul li::before { content: '▸'; position: absolute; left: 0; opacity: 0.5; }
+  .card ul li:hover { color: var(--text); }
+
+  .card .card-footer {
+    margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+    font-size: 0.82rem; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .brain-card .card-footer { color: var(--accent-brain); }
+  .tool-card .card-footer { color: var(--accent-tool); }
+  .agent-card .card-footer { color: var(--accent-agent); }
+  .card .card-footer .dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+    animation: pulse-dot 1.5s infinite;
+  }
+  .brain-card .card-footer .dot { background: var(--accent-brain); }
+  .tool-card .card-footer .dot { background: var(--accent-tool); }
+  .agent-card .card-footer .dot { background: var(--accent-agent); }
+  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* ========== House Metaphor ========== */
+  .metaphor-scene {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 48px 32px;
+    display: flex; flex-direction: column; gap: 40px;
+    opacity: 0; transform: translateY(40px); transition: all 0.8s ease;
+  }
+  .metaphor-scene.visible { opacity: 1; transform: translateY(0); }
+
+  .metaphor-row {
+    display: flex; align-items: flex-start; gap: 24px;
+    padding: 24px; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+    transition: all 0.4s; cursor: default;
+  }
+  .metaphor-row:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+  .metaphor-avatar {
+    flex-shrink: 0; width: 80px; height: 80px; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center; font-size: 2.4rem;
+    transition: transform 0.3s;
+  }
+  .metaphor-row:hover .metaphor-avatar { transform: scale(1.1) rotate(-3deg); }
+  .metaphor-avatar.brain-av { background: rgba(91,141,238,0.15); }
+  .metaphor-avatar.tool-av { background: rgba(52,168,83,0.15); }
+  .metaphor-avatar.agent-av { background: rgba(234,134,0,0.15); }
+
+  .metaphor-content h4 {
+    font-size: 1.15rem; font-weight: 700; margin-bottom: 6px;
+  }
+  .metaphor-content .m-role { font-size: 0.8rem; opacity: 0.6; margin-bottom: 10px; }
+  .metaphor-content .m-dialogue {
+    background: rgba(255,255,255,0.03); border-left: 3px solid rgba(255,255,255,0.2);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 0.9rem;
+    color: var(--text-secondary); font-style: italic; margin-bottom: 10px;
+    transition: all 0.3s;
+  }
+  .metaphor-row:hover .m-dialogue { border-left-color: rgba(255,255,255,0.5); color: var(--text); }
+  .metaphor-row:nth-child(1) .m-dialogue { border-left-color: var(--accent-brain); }
+  .metaphor-row:nth-child(2) .m-dialogue { border-left-color: var(--accent-tool); }
+  .metaphor-row:nth-child(3) .m-dialogue { border-left-color: var(--accent-agent); }
+
+  /* ========== Comparison Table ========== */
+  .table-wrapper {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    opacity: 0; transform: translateY(40px); transition: all 0.8s ease;
+  }
+  .table-wrapper.visible { opacity: 1; transform: translateY(0); }
+
+  table {
+    width: 100%; border-collapse: collapse;
+  }
+  thead th {
+    padding: 16px 16px; font-size: 0.85rem; font-weight: 600;
+    text-align: left; background: rgba(255,255,255,0.03);
+    border-bottom: 2px solid var(--border);
+  }
+  thead th:first-child { color: var(--text-secondary); }
+  thead th:nth-child(2) { color: var(--accent-brain); }
+  thead th:nth-child(3) { color: var(--accent-tool); }
+  thead th:nth-child(4) { color: var(--accent-agent); }
+
+  tbody td {
+    padding: 14px 16px; font-size: 0.88rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  tbody td:first-child { font-weight: 500; color: var(--text-secondary); }
+  .highlight-cell {
+    font-weight: 600; padding: 6px 12px; border-radius: 6px;
+    font-size: 0.82rem; display: inline-block;
+  }
+  .hl-brain { background: rgba(91,141,238,0.12); color: var(--accent-brain); }
+  .hl-tool { background: rgba(52,168,83,0.12); color: var(--accent-tool); }
+  .hl-agent { background: rgba(234,134,0,0.12); color: var(--accent-agent); }
+
+  /* ========== Prompt Comparison ========== */
+  .prompt-tabs {
+    display: flex; gap: 0; justify-content: center; margin-bottom: 32px;
+    border-radius: var(--radius-sm); overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .prompt-tab {
+    padding: 12px 28px; font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; border: none; background: transparent; color: var(--text-secondary);
+    transition: all 0.3s; font-family: inherit; position: relative;
+  }
+  .prompt-tab:hover { color: var(--text); }
+  .prompt-tab.active { background: rgba(255,255,255,0.06); color: var(--text); }
+  .prompt-tab.brain-tab.active { color: var(--accent-brain); background: rgba(91,141,238,0.1); }
+  .prompt-tab.tool-tab.active { color: var(--accent-tool); background: rgba(52,168,83,0.1); }
+  .prompt-tab.agent-tab.active { color: var(--accent-agent); background: rgba(234,134,0,0.1); }
+
+  .prompt-content {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px;
+    min-height: 300px; position: relative; overflow: hidden;
+  }
+  .prompt-panel { display: none; animation: fadeIn 0.5s ease; }
+  .prompt-panel.active { display: block; }
+
+  .prompt-label {
+    display: inline-block; padding: 4px 12px; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 600; margin-bottom: 16px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .brain-panel .prompt-label { background: rgba(91,141,238,0.15); color: var(--accent-brain); }
+  .tool-panel .prompt-label { background: rgba(52,168,83,0.15); color: var(--accent-tool); }
+  .agent-panel .prompt-label { background: rgba(234,134,0,0.15); color: var(--accent-agent); }
+
+  .prompt-user-msg {
+    background: rgba(255,255,255,0.04); border-radius: var(--radius-sm);
+    padding: 14px 18px; margin-bottom: 20px; font-size: 0.9rem;
+    border-left: 3px solid var(--accent-highlight);
+  }
+  .prompt-ai-response {
+    background: rgba(0,0,0,0.2); border-radius: var(--radius-sm);
+    padding: 18px; font-size: 0.85rem; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.6; white-space: pre-wrap; overflow-x: auto;
+    max-height: 400px; overflow-y: auto;
+    border: 1px solid rgba(255,255,255,0.05);
+    color: #a8d8a8;
+  }
+
+  .prompt-result-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 50px; font-size: 0.82rem; font-weight: 500;
+    margin-top: 16px;
+  }
+  .brain-panel .prompt-result-tag { background: rgba(91,141,238,0.1); color: var(--accent-brain); }
+  .tool-panel .prompt-result-tag { background: rgba(52,168,83,0.1); color: var(--accent-tool); }
+  .agent-panel .prompt-result-tag { background: rgba(234,134,0,0.1); color: var(--accent-agent); }
+
+  /* ========== Summary ========== */
+  .summary-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 900px) { .summary-cards { grid-template-columns: 1fr; } }
+  .summary-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px;
+    text-align: center; transition: all 0.4s;
+    opacity: 0; transform: translateY(30px);
+  }
+  .summary-card.visible { opacity: 1; transform: translateY(0); }
+  .summary-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+  .summary-card .sc-icon { font-size: 2.4rem; margin-bottom: 12px; }
+  .summary-card h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+  .summary-card p { font-size: 0.85rem; color: var(--text-secondary); }
+
+  .golden-sentence {
+    text-align: center; padding: 40px 32px;
+    background: linear-gradient(135deg, rgba(91,141,238,0.06), rgba(166,85,247,0.06), rgba(255,107,157,0.06));
+    border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius);
+    font-size: 1.15rem; font-weight: 500; line-height: 1.8;
+    opacity: 0; transform: translateY(30px); transition: all 0.8s ease;
+  }
+  .golden-sentence.visible { opacity: 1; transform: translateY(0); }
+  .golden-sentence strong { color: var(--accent-highlight); }
+
+  /* ========== Recommendations ========== */
+  .rec-steps {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  @media (max-width: 900px) { .rec-steps { grid-template-columns: 1fr; } }
+  .rec-step {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px; position: relative;
+    transition: all 0.4s;
+    opacity: 0; transform: translateY(30px);
+  }
+  .rec-step.visible { opacity: 1; transform: translateY(0); }
+  .rec-step:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.15); }
+  .rec-step .step-num {
+    position: absolute; top: -16px; right: 20px;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem;
+  }
+  .rec-step:nth-child(1) .step-num { background: rgba(91,141,238,0.2); color: var(--accent-brain); }
+  .rec-step:nth-child(2) .step-num { background: rgba(52,168,83,0.2); color: var(--accent-tool); }
+  .rec-step:nth-child(3) .step-num { background: rgba(234,134,0,0.2); color: var(--accent-agent); }
+  .rec-step h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+  .rec-step p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; }
+
+  /* ========== Footer ========== */
+  .site-footer {
+    text-align: center; padding: 48px 24px; border-top: 1px solid var(--border);
+    color: var(--text-secondary); font-size: 0.8rem;
+  }
+
+  /* ========== Animations ========== */
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+  /* ========== Progress bar ========== */
+  .progress-bar {
+    position: fixed; top: 56px; left: 0; height: 3px; z-index: 1001;
+    background: linear-gradient(90deg, var(--accent-brain), var(--accent-highlight), var(--accent-agent));
+    transition: width 0.1s linear;
+  }
+
+  /* ========== Scroll to top ========== */
+  .scroll-top-btn {
+    position: fixed; bottom: 32px; right: 32px; z-index: 999;
+    width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; opacity: 0; pointer-events: none;
+    transition: all 0.3s; backdrop-filter: blur(10px);
+  }
+  .scroll-top-btn.visible { opacity: 0.8; pointer-events: auto; }
+  .scroll-top-btn:hover { opacity: 1; transform: translateY(-3px); }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div id="particles-container"></div>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">🤖 AI 学习分享</div>
+    <ul class="nav-links">
+      <li><a href="#what">三类产品</a></li>
+      <li><a href="#metaphor">装修比喻</a></li>
+      <li><a href="#compare">核心区别</a></li>
+      <li><a href="#prompt-demo">实例对比</a></li>
+      <li><a href="#summary">总结</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Scroll to top -->
+<button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div>
+    <div class="hero-badge">📖 10分钟分享 · 面向全公司</div>
+    <h1>
+      AI产品<br><span class="gradient-text">三类形态</span>解析
+    </h1>
+    <p>大模型、AI工具、AI Agent —— 它们不是同一种东西。<br>10分钟让你分得一清二楚，知道什么时候该用哪一种。</p>
+    <div class="hero-icons">
+      <div class="hero-icon-item">
+        <div class="hero-icon-circle brain">🧠</div>
+        <span class="hero-icon-label" style="color:var(--accent-brain)">大模型</span>
+      </div>
+      <div class="hero-icon-item">
+        <div class="hero-icon-circle tool">🔧</div>
+        <span class="hero-icon-label" style="color:var(--accent-tool)">AI工具</span>
+      </div>
+      <div class="hero-icon-item">
+        <div class="hero-icon-circle agent">🤖</div>
+        <span class="hero-icon-label" style="color:var(--accent-agent)">AI Agent</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 13l5 5 5-5"/><path d="M7 6l5 5 5-5"/></svg>
+  </div>
+</section>
+
+<!-- ==================== SECTION 1: Three Product Types ==================== -->
+<section class="section" id="what">
+  <h2 class="section-title">三类产品分别是什么</h2>
+  <p class="section-subtitle">一个读过全人类的书，一个帮你动手干活，一个自己能规划执行</p>
+  <div class="cards-grid">
+    <!-- Card 1: 大模型 -->
+    <div class="card brain-card" data-animate>
+      <div class="card-icon">🧠</div>
+      <h3>大模型</h3>
+      <div class="card-tagline">最强大脑</div>
+      <div class="product-list">
+        <span class="product-tag">GPT-4o</span>
+        <span class="product-tag">DeepSeek</span>
+        <span class="product-tag">Claude</span>
+        <span class="product-tag">Kimi</span>
+        <span class="product-tag">通义千问</span>
+      </div>
+      <ul>
+        <li>回答、写作、翻译、总结</li>
+        <li>分析文档、提炼要点</li>
+        <li>写代码片段、辅助Debug</li>
+        <li>头脑风暴、创意生成</li>
+      </ul>
+      <div class="card-footer"><span class="dot"></span> 只动嘴，不动手</div>
+    </div>
+
+    <!-- Card 2: AI工具 -->
+    <div class="card tool-card" data-animate>
+      <div class="card-icon">🔧</div>
+      <h3>AI工具 / 编程助手</h3>
+      <div class="card-tagline">你的AI副驾</div>
+      <div class="product-list">
+        <span class="product-tag">Trae</span>
+        <span class="product-tag">Cursor</span>
+        <span class="product-tag">Claude Code</span>
+        <span class="product-tag">Copilot</span>
+        <span class="product-tag">通义灵码</span>
+      </div>
+      <ul>
+        <li>代码自动补全、生成</li>
+        <li>在你的项目里直接改代码</li>
+        <li>定位Bug并自动修复</li>
+        <li>设计图转代码</li>
+      </ul>
+      <div class="card-footer"><span class="dot"></span> 在你的环境里直接动手</div>
+    </div>
+
+    <!-- Card 3: AI Agent -->
+    <div class="card agent-card" data-animate>
+      <div class="card-icon">🤖</div>
+      <h3>AI Agent / 智能体</h3>
+      <div class="card-tagline">你的AI员工</div>
+      <div class="product-list">
+        <span class="product-tag">Manus</span>
+        <span class="product-tag">Coze</span>
+        <span class="product-tag">Devin</span>
+        <span class="product-tag">Operator</span>
+        <span class="product-tag">WorkBuddy</span>
+      </div>
+      <ul>
+        <li>自主拆解任务、规划步骤</li>
+        <li>自己调用各类工具</li>
+        <li>多步骤复杂任务全流程</li>
+        <li>交付完整成果</li>
+      </ul>
+      <div class="card-footer"><span class="dot"></span> 自己规划自己动手</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 2: House Metaphor ==================== -->
+<section class="section" id="metaphor">
+  <h2 class="section-title">装修房子的比喻</h2>
+  <p class="section-subtitle">把三类AI比作三种装修角色，一听就懂</p>
+  <div class="metaphor-scene" data-animate>
+    <!-- 大模型 = 设计师 -->
+    <div class="metaphor-row" data-metaphor="brain">
+      <div class="metaphor-avatar brain-av">👨‍🎨</div>
+      <div class="metaphor-content">
+        <h4 style="color:var(--accent-brain)">大模型 = 博学多才的设计师</h4>
+        <div class="m-role">你问他，他给你滔滔不绝地讲方案</div>
+        <div class="m-dialogue">"现代简约讲究少即是多，色调以白灰米为主，家具线条要简洁..."</div>
+        <p style="font-size:0.85rem; color:var(--text-secondary);">说得头头是道，但<strong style="color:var(--accent-brain)">只动嘴，不动手</strong>。不会帮你量房、买材料、刷墙。</p>
+      </div>
+    </div>
+
+    <!-- AI工具 = 工长 -->
+    <div class="metaphor-row" data-metaphor="tool">
+      <div class="metaphor-avatar tool-av">👷</div>
+      <div class="metaphor-content">
+        <h4 style="color:var(--accent-tool)">AI工具 = 你身边的万能工长</h4>
+        <div class="m-role">你指挥，他直接在你的房子里动手干活</div>
+        <div class="m-dialogue">"把这面墙刷成浅灰色。" → 工长拿起滚筒，调漆、刷墙，一气呵成</div>
+        <p style="font-size:0.85rem; color:var(--text-secondary);"><strong style="color:var(--accent-tool)">直接动手</strong>，而且在你的房子里动手。不是给你一份"刷墙指南"让你自己干。</p>
+      </div>
+    </div>
+
+    <!-- Agent = 管家 -->
+    <div class="metaphor-row" data-metaphor="agent">
+      <div class="metaphor-avatar agent-av">🎩</div>
+      <div class="metaphor-content">
+        <h4 style="color:var(--accent-agent)">AI Agent = 全案装修管家</h4>
+        <div class="m-role">你说目标，他全部自己操心完成</div>
+        <div class="m-dialogue">"装修成现代简约风，预算30万，下月底入住。" → 管家：量房→设计方案→比价采购→安排工人→监工→验收→交钥匙</div>
+        <p style="font-size:0.85rem; color:var(--text-secondary);">你只管说目标，<strong style="color:var(--accent-agent)">剩下的全是他在操心</strong>。遇到缺货自己想办法，墙面不平自己决定怎么处理。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 3: Comparison Table ==================== -->
+<section class="section" id="compare">
+  <h2 class="section-title">核心区别总结</h2>
+  <p class="section-subtitle">一张表看清三者的本质差异</p>
+  <div class="table-wrapper" data-animate>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th><th>🧠 大模型</th><th>🔧 AI工具</th><th>🤖 AI Agent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>角色定位</td>
+          <td><span class="highlight-cell hl-brain">博学的设计师</span></td>
+          <td><span class="highlight-cell hl-tool">万能工长</span></td>
+          <td><span class="highlight-cell hl-agent">全案管家</span></td>
+        </tr>
+        <tr>
+          <td>交互方式</td>
+          <td>你问一句，我答一句</td>
+          <td>你下指令，我直接干活</td>
+          <td>你给目标，我自主完成</td>
+        </tr>
+        <tr>
+          <td>是否动手</td>
+          <td><span class="highlight-cell hl-brain">不动手，只给建议</span></td>
+          <td><span class="highlight-cell hl-tool">直接在你环境里操作</span></td>
+          <td><span class="highlight-cell hl-agent">自主调用工具完成全流程</span></td>
+        </tr>
+        <tr>
+          <td>任务范围</td>
+          <td>单次对话，单次回答</td>
+          <td>单个子任务</td>
+          <td>多步骤、跨工具的复杂任务</td>
+        </tr>
+        <tr>
+          <td>主动权</td>
+          <td>你主导，你来问</td>
+          <td>你主导，你来指挥</td>
+          <td><span class="highlight-cell hl-agent">AI主导，自己规划执行</span></td>
+        </tr>
+        <tr>
+          <td>使用门槛</td>
+          <td>打开网页就能用</td>
+          <td>需要安装到电脑/IDE</td>
+          <td>通常需要配置或等待邀请</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== SECTION 4: Prompt Comparison ==================== -->
+<section class="section" id="prompt-demo">
+  <h2 class="section-title">同一个需求，发给三类AI</h2>
+  <p class="section-subtitle">需求：做一个员工请假系统的网页 ← 看看它们分别怎么处理</p>
+
+  <div class="prompt-tabs">
+    <button class="prompt-tab brain-tab active" onclick="switchPrompt('brain')">🧠 发给大模型</button>
+    <button class="prompt-tab tool-tab" onclick="switchPrompt('tool')">🔧 发给AI工具</button>
+    <button class="prompt-tab agent-tab" onclick="switchPrompt('agent')">🤖 发给AI Agent</button>
+  </div>
+
+  <div class="prompt-content">
+    <!-- Brain Panel -->
+    <div class="prompt-panel brain-panel active" id="panel-brain">
+      <span class="prompt-label">DeepSeek / GPT</span>
+      <div class="prompt-user-msg">
+        💬 <em>"帮我写一个员工请假系统的网页代码，要有请假申请表单、审批状态显示、历史记录列表三个页面，用React写。"</em>
+      </div>
+      <div class="prompt-ai-response" id="typing-brain">
+好的，这是一个员工请假系统的React实现方案：
+
+// App.js
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// LeaveForm.js
+const LeaveForm = () => {
+  const [formData, setFormData] = useState({...});
+  ...
+}
+// ApprovalStatus.js ...
+// HistoryList.js ...
+
+使用步骤：
+1. 创建React项目：npx create-react-app leave-system
+2. 安装依赖：npm install react-router-dom axios
+3. 把上面的代码复制到对应文件里
+4. 运行：npm start</div>
+      <div class="prompt-result-tag">📋 结果：一份"代码说明书"，需要你自己复制粘贴、安装运行、调试</div>
+    </div>
+
+    <!-- Tool Panel -->
+    <div class="prompt-panel tool-panel" id="panel-tool">
+      <span class="prompt-label">Trae / Claude Code</span>
+      <div class="prompt-user-msg">
+        💬 <em>"在我当前的项目里，创建一个员工请假系统，要有请假申请表单、审批状态显示、历史记录列表三个页面，用React写。"</em>
+      </div>
+      <div class="prompt-ai-response" id="typing-tool">
+✅ 扫描当前项目结构...发现已有React项目
+✅ 创建 src/pages/LeaveForm.jsx
+✅ 创建 src/pages/ApprovalStatus.jsx
+✅ 创建 src/pages/HistoryList.jsx
+✅ 修改 src/App.jsx，加入路由配置
+✅ 安装依赖：npm install react-router-dom
+
+🎉 已完成！访问 http://localhost:3000/leave-form 查看效果。
+   需要调整什么直接告诉我。</div>
+      <div class="prompt-result-tag">⚡ 结果：代码已经跑在你的项目里了，浏览器打开就能看，有问题接着聊</div>
+    </div>
+
+    <!-- Agent Panel -->
+    <div class="prompt-panel agent-panel" id="panel-agent">
+      <span class="prompt-label">Manus / OpenAI Operator</span>
+      <div class="prompt-user-msg">
+        💬 <em>"帮我做一个员工请假系统的完整方案，包括前端网页、后端API、数据库设计，部署后能直接用。要支持员工提交请假、主管审批、邮件通知。"</em>
+      </div>
+      <div class="prompt-ai-response" id="typing-agent">
+📋 需求分析：需要前端+后端+数据库，先拆解任务...
+📐 技术方案：
+   前端：React + Ant Design
+   后端：Node.js + Express
+   数据库：SQLite
+   邮件：Nodemailer
+🔨 开始执行：
+   ✅ 初始化前后端项目
+   ✅ 数据库表设计（users / leave_requests / approvals）
+   ✅ 后端API（登录/提交请假/审批/查询/邮件通知）
+   ✅ 前端页面（登录/申请/审批/历史记录）
+   ✅ 邮件模板配置
+   ✅ Dockerfile + docker-compose.yml 部署脚本
+🧪 测试验证：走通完整流程 ✓
+📦 交付：完整项目文件夹 + 部署手册 + 使用说明</div>
+      <div class="prompt-result-tag">🚀 结果：一个完整可运行的系统，前端→后端→数据库→部署，拿到手就能用</div>
+    </div>
+  </div>
+
+  <!-- Mini comparison table for prompt -->
+  <div style="margin-top: 32px; opacity:0; transform:translateY(30px);" data-animate>
+    <div class="table-wrapper" style="margin-top:0;">
+      <table>
+        <thead>
+          <tr><th></th><th style="color:var(--accent-brain)">🧠 大模型</th><th style="color:var(--accent-tool)">🔧 AI工具</th><th style="color:var(--accent-agent)">🤖 AI Agent</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>你的提示词</td><td>"帮我写一段代码..."</td><td>"帮我在这个项目里创建..."</td><td>"帮我做一个完整的系统..."</td></tr>
+          <tr><td>AI的行动</td><td>生成文字/代码给你</td><td>直接在环境里写代码</td><td>自主规划、多步骤全流程</td></tr>
+          <tr><td>你的后续工作</td><td>手动复制、运行、调试</td><td>直接看效果，有问题继续聊</td><td>验收成果，有问题继续改</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SECTION 5: Summary ==================== -->
+<section class="section" id="summary">
+  <h2 class="section-title">总结</h2>
+  <p class="section-subtitle">三句话 + 一句话，彻底讲清楚</p>
+
+  <div class="summary-cards">
+    <div class="summary-card" data-animate style="--delay:0">
+      <div class="sc-icon">🧠</div>
+      <h4 style="color:var(--accent-brain)">大模型</h4>
+      <p>最强大脑，你问它答，给你知识和内容，但<strong style="color:var(--accent-brain)">不动手，只动嘴</strong>。</p>
+    </div>
+    <div class="summary-card" data-animate style="--delay:1">
+      <div class="sc-icon">🔧</div>
+      <h4 style="color:var(--accent-tool)">AI工具</h4>
+      <p>你的AI副驾，装在你电脑里，你指挥它，它<strong style="color:var(--accent-tool)">直接在你工作现场动手干活</strong>。</p>
+    </div>
+    <div class="summary-card" data-animate style="--delay:2">
+      <div class="sc-icon">🤖</div>
+      <h4 style="color:var(--accent-agent)">AI Agent</h4>
+      <p>你的AI员工，你给目标，它<strong style="color:var(--accent-agent)">自己拆解任务、调用工具、从头办到尾</strong>。</p>
+    </div>
+  </div>
+
+  <div class="golden-sentence" data-animate>
+    <div style="font-size:2rem; margin-bottom:12px;">💡</div>
+    <strong>大模型是"会思考的大脑"</strong>，<strong style="color:var(--accent-tool)">AI工具是"会动手的双手"</strong>，<strong style="color:var(--accent-agent)">AI Agent是"有大脑+有双手+能自己安排工作"的完整员工</strong> —— <br>它们的本质区别就在于：<strong>从"只动嘴"到"动手"再到"自己规划着动手"</strong>。
+  </div>
+</section>
+
+<!-- ==================== SECTION 6: Recommendations ==================== -->
+<section class="section" style="padding-top:40px; padding-bottom:80px;">
+  <h2 class="section-title">给同事的建议</h2>
+  <p class="section-subtitle">从入门到进阶，三步走</p>
+  <div class="rec-steps">
+    <div class="rec-step" data-animate style="--delay:0">
+      <div class="step-num">1</div>
+      <h4 style="color:var(--accent-brain)">所有人 · 先开始用大模型</h4>
+      <p>DeepSeek、Kimi、GPT，选一个顺手的。每天用来辅助写东西、查资料、总结文档。<br><strong>零门槛，打开网页就能用。</strong></p>
+    </div>
+    <div class="rec-step" data-animate style="--delay:1">
+      <div class="step-num">2</div>
+      <h4 style="color:var(--accent-tool)">技术同事 · 装上AI编程工具</h4>
+      <p>装一个Trae或Cursor。它不是"更好用的搜索引擎"，而是<strong>真的在帮你写代码的同事</strong>。<br>用了就知道效率提升有多大。</p>
+    </div>
+    <div class="rec-step" data-animate style="--delay:2">
+      <div class="step-num">3</div>
+      <h4 style="color:var(--accent-agent)">想尝鲜的同事 · 关注Agent</h4>
+      <p>关注Agent类产品。未来的AI不是等你指挥才动，而是<strong>你给目标它就自己跑</strong>。<br>早点了解，早点跟上节奏。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="site-footer">
+  <p>谢谢大家。10分钟到了，有问题随时交流 🙌</p>
+</div>
+
+<script>
+// ========== Particles ==========
+(function() {
+  const container = document.getElementById('particles-container');
+  const colors = ['#5b8dee', '#34a853', '#ea8600', '#ff6b9d', '#a855f7'];
+  for (let i = 0; i < 35; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+    p.style.animationDelay = Math.random() * 15 + 's';
+    container.appendChild(p);
+  }
+})();
+
+// ========== Scroll Progress Bar ==========
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+
+  // Scroll to top button
+  const btn = document.getElementById('scrollTopBtn');
+  if (scrollTop > 600) btn.classList.add('visible'); else btn.classList.remove('visible');
+});
+
+// ========== Intersection Observer for Scroll Animations ==========
+const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // For cards with staggered delays
+      if (entry.target.style.getPropertyValue('--delay') !== undefined) {
+        const delay = parseInt(entry.target.style.getPropertyValue('--delay')) || 0;
+        entry.target.style.transitionDelay = (delay * 0.15) + 's';
+      }
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+// ========== Prompt Tab Switching ==========
+function switchPrompt(type) {
+  document.querySelectorAll('.prompt-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.prompt-panel').forEach(p => p.classList.remove('active'));
+
+  const tabMap = { brain: '.brain-tab', tool: '.tool-tab', agent: '.agent-tab' };
+  const panelMap = { brain: '#panel-brain', tool: '#panel-tool', agent: '#panel-agent' };
+
+  document.querySelector(tabMap[type]).classList.add('active');
+  document.querySelector(panelMap[type]).classList.add('active');
+}
+
+// ========== Metaphor row hover enhancement ==========
+document.querySelectorAll('.metaphor-row').forEach(row => {
+  row.addEventListener('mouseenter', function() {
+    this.style.transform = 'translateX(8px)';
+  });
+  row.addEventListener('mouseleave', function() {
+    this.style.transform = 'translateX(0)';
+  });
+});
+
+// ========== Active nav link on scroll ==========
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 100;
+    if (window.scrollY >= top) current = section.getAttribute('id');
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+
+// ========== Card click to expand details (toggle) ==========
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', function(e) {
+    // Don't toggle if clicking on product tags
+    if (e.target.classList.contains('product-tag')) return;
+
+    const ul = this.querySelector('ul');
+    const wasExpanded = ul.style.maxHeight;
+    if (wasExpanded) {
+      ul.style.maxHeight = null;
+      this.style.transform = '';
+    } else {
+      ul.style.maxHeight = ul.scrollHeight + 'px';
+    }
+  });
+  // Init
+  const ul = card.querySelector('ul');
+  ul.style.overflow = 'hidden';
+  ul.style.transition = 'max-height 0.4s ease';
+  ul.style.maxHeight = ul.scrollHeight + 'px';
+});
+
+// ========== Smooth stagger for summary cards ==========
+document.querySelectorAll('.summary-card[data-animate]').forEach((card, i) => {
+  card.style.transitionDelay = (i * 0.12) + 's';
+});
+document.querySelectorAll('.rec-step[data-animate]').forEach((step, i) => {
+  step.style.transitionDelay = (i * 0.12) + 's';
+});
+
+// ========== Keyboard navigation for prompt tabs ==========
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    const tabs = ['brain', 'tool', 'agent'];
+    const activeTab = document.querySelector('.prompt-tab.active');
+    let idx = tabs.findIndex(t => activeTab.classList.contains(t + '-tab'));
+    if (e.key === 'ArrowRight') idx = (idx + 1) % 3;
+    else idx = (idx - 1 + 3) % 3;
+    switchPrompt(tabs[idx]);
+  }
+});
+
+console.log('🎓 AI产品三类形态解析 - 动画教学页面已就绪');
+console.log('   → 滚动浏览各章节');
+console.log('   → 点击提示词Tab切换对比');
+console.log('   → 鼠标悬停卡片和行查看交互效果');
+console.log('   → 用键盘 ← → 切换提示词面板');
+</script>
+
+</body>
+</html>
