@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Pages 小白入门指南</title>
+<style>
+/* ============ CSS Variables ============ */
+:root {
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-hover: #1c2333;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --orange: #d29922;
+  --purple: #a371f7;
+  --red: #f85149;
+  --code-bg: #0d1117;
+  --shadow: 0 0 0 1px rgba(240,246,252,0.1), 0 4px 24px rgba(0,0,0,0.4);
+  --radius: 12px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior:smooth; }
+
+body {
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ============ Decorative Background ============ */
+.bg-grid {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(240,246,252,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240,246,252,0.03) 1px, transparent 1px);
+  background-size:50px 50px;
+}
+.bg-glow {
+  position:fixed; z-index:0; pointer-events:none;
+  width:600px; height:600px; border-radius:50%;
+  filter:blur(120px); opacity:0.15;
+}
+.bg-glow.g1 { top:-200px; left:-100px; background:var(--accent); }
+.bg-glow.g2 { bottom:-200px; right:-100px; background:var(--purple); }
+.bg-glow.g3 { top:50%; left:50%; transform:translate(-50%,-50%); background:var(--green); }
+
+/* ============ Navigation ============ */
+nav {
+  position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(20px);
+  background:rgba(13,17,23,0.85);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  display:flex; align-items:center; justify-content:space-between;
+  height:56px;
+}
+nav .logo {
+  display:flex; align-items:center; gap:10px;
+  font-weight:700; font-size:18px;
+}
+nav .logo svg { width:28px; height:28px; }
+nav .progress-wrap {
+  display:flex; align-items:center; gap:12px;
+}
+nav .progress-bar {
+  width:160px; height:6px;
+  background:var(--border); border-radius:3px; overflow:hidden;
+}
+nav .progress-fill {
+  height:100%; background:linear-gradient(90deg,var(--green),var(--accent));
+  border-radius:3px; transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+nav .progress-text { font-size:13px; color:var(--text-secondary); white-space:nowrap; }
+
+/* ============ Main Container ============ */
+.container {
+  position:relative; z-index:1;
+  max-width:900px; margin:0 auto; padding:0 24px;
+}
+
+/* ============ Hero Section ============ */
+.hero {
+  text-align:center; padding:80px 0 60px;
+  position:relative;
+}
+.hero-icon {
+  display:inline-block; animation:float 3s ease-in-out infinite;
+  margin-bottom:24px;
+}
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-12px); }
+}
+.hero h1 {
+  font-size:clamp(32px,5vw,52px); font-weight:800;
+  background:linear-gradient(135deg,var(--text) 0%,var(--accent) 50%,var(--purple) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; margin-bottom:16px;
+  line-height:1.2;
+}
+.hero p {
+  font-size:18px; color:var(--text-secondary); max-width:600px; margin:0 auto 32px;
+}
+.hero .badge-row {
+  display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+}
+.hero .badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 14px; border-radius:20px;
+  font-size:13px; font-weight:500;
+  border:1px solid var(--border);
+  background:var(--bg-card);
+}
+.badge .dot { width:8px; height:8px; border-radius:50%; }
+.badge .dot.green { background:var(--green); }
+.badge .dot.blue { background:var(--accent); }
+.badge .dot.purple { background:var(--purple); }
+
+/* ============ Section Titles ============ */
+.section {
+  margin-bottom:64px;
+  opacity:0; transform:translateY(30px);
+  transition:opacity 0.8s, transform 0.8s;
+}
+.section.visible {
+  opacity:1; transform:translateY(0);
+}
+.section-title {
+  font-size:28px; font-weight:700; margin-bottom:8px;
+  display:flex; align-items:center; gap:12px;
+}
+.section-title .num {
+  width:40px; height:40px; border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.section-subtitle {
+  color:var(--text-secondary); margin-bottom:28px; font-size:15px;
+}
+
+/* ============ Info Cards ============ */
+.info-cards {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:16px; margin-bottom:24px;
+}
+.info-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px;
+  transition:var(--transition); cursor:default;
+  position:relative; overflow:hidden;
+}
+.info-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--purple));
+  transform:scaleX(0); transform-origin:left;
+  transition:transform 0.4s;
+}
+.info-card:hover::before { transform:scaleX(1); }
+.info-card:hover {
+  transform:translateY(-4px);
+  box-shadow:var(--shadow); border-color:var(--accent);
+}
+.info-card .card-icon { font-size:32px; margin-bottom:12px; }
+.info-card h4 { font-size:16px; margin-bottom:8px; }
+.info-card p { font-size:14px; color:var(--text-secondary); }
+
+/* ============ Step Cards ============ */
+.step {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:var(--radius); margin-bottom:16px; overflow:hidden;
+  transition:var(--transition);
+}
+.step:hover { border-color:var(--accent); }
+.step-header {
+  display:flex; align-items:center; gap:16px;
+  padding:20px 24px; cursor:pointer;
+  user-select:none; transition:background 0.2s;
+}
+.step-header:hover { background:var(--bg-hover); }
+.step-num {
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:20px; flex-shrink:0;
+  color:#fff; transition:transform 0.3s;
+}
+.step.open .step-num { transform:scale(1.1); }
+.step-num.s1 { background:linear-gradient(135deg,#238636,#3fb950); }
+.step-num.s2 { background:linear-gradient(135deg,#1f6feb,#58a6ff); }
+.step-num.s3 { background:linear-gradient(135deg,#8957e5,#a371f7); }
+.step-num.s4 { background:linear-gradient(135deg,#9e6a03,#d29922); }
+.step-num.s5 { background:linear-gradient(135deg,#da3633,#f85149); }
+.step-num.s6 { background:linear-gradient(135deg,#1f6feb,#58a6ff); }
+
+.step-info { flex:1; min-width:0; }
+.step-info h3 { font-size:17px; margin-bottom:2px; }
+.step-info .step-brief { font-size:13px; color:var(--text-secondary); }
+.step-arrow {
+  font-size:20px; color:var(--text-secondary);
+  transition:transform 0.3s; flex-shrink:0;
+}
+.step.open .step-arrow { transform:rotate(180deg); color:var(--accent); }
+.step-done .step-arrow { color:var(--green); }
+.step-body {
+  max-height:0; overflow:hidden;
+  transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.step.open .step-body { max-height:2000px; }
+.step-content {
+  padding:0 24px 24px 84px;
+  font-size:15px; color:var(--text-secondary);
+}
+.step-content p { margin-bottom:12px; }
+.step-content ul { padding-left:20px; margin-bottom:12px; }
+.step-content li { margin-bottom:6px; }
+
+/* ============ Code Blocks ============ */
+.code-block {
+  background:var(--code-bg); border:1px solid var(--border);
+  border-radius:8px; overflow:hidden; margin:12px 0;
+  position:relative;
+}
+.code-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 16px; border-bottom:1px solid var(--border);
+  background:rgba(22,27,34,0.6);
+}
+.code-lang { font-size:12px; color:var(--text-secondary); font-weight:600; text-transform:uppercase; }
+.code-copy {
+  background:none; border:1px solid var(--border); color:var(--text-secondary);
+  padding:4px 10px; border-radius:6px; font-size:12px; cursor:pointer;
+  transition:var(--transition);
+}
+.code-copy:hover { color:var(--accent); border-color:var(--accent); }
+.code-copy.copied { color:var(--green); border-color:var(--green); }
+.code-block pre {
+  padding:16px; overflow-x:auto; margin:0;
+  font-family:'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
+  font-size:14px; line-height:1.6;
+}
+.code-block code { color:var(--text); }
+.code-block .comment { color:#8b949e; }
+.code-block .string { color:#a5d6ff; }
+.code-block .keyword { color:#ff7b72; }
+.code-block .func { color:#d2a8ff; }
+.code-block .attr { color:#79c0ff; }
+
+/* ============ Terminal Simulation ============ */
+.terminal {
+  background:#0d1117; border:1px solid var(--border);
+  border-radius:8px; overflow:hidden; margin:12px 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.terminal-bar {
+  display:flex; align-items:center; gap:6px;
+  padding:10px 16px; background:#161b22;
+  border-bottom:1px solid var(--border);
+}
+.terminal-dot {
+  width:10px; height:10px; border-radius:50%;
+}
+.terminal-dot.red { background:#f85149; }
+.terminal-dot.yellow { background:#d29922; }
+.terminal-dot.green { background:#3fb950; }
+.terminal pre {
+  padding:16px; margin:0; font-family:'JetBrains Mono','Cascadia Code',Consolas,monospace;
+  font-size:14px; line-height:1.7; color:#e6edf3; overflow-x:auto;
+}
+.terminal .prompt { color:var(--green); }
+.terminal .cmd { color:var(--accent); }
+.terminal .output { color:var(--text-secondary); }
+
+/* ============ Tip Box ============ */
+.tip {
+  background:rgba(88,166,255,0.08); border:1px solid rgba(88,166,255,0.2);
+  border-radius:8px; padding:14px 18px; margin:12px 0;
+  display:flex; gap:10px; font-size:14px;
+}
+.tip-icon { flex-shrink:0; font-size:18px; }
+.warning {
+  background:rgba(210,153,34,0.08); border:1px solid rgba(210,153,34,0.2);
+}
+
+/* ============ Comparison Table ============ */
+.compare-table {
+  width:100%; border-collapse:collapse; margin:16px 0;
+  font-size:14px; border-radius:8px; overflow:hidden;
+}
+.compare-table th {
+  background:rgba(88,166,255,0.1); padding:12px 16px;
+  text-align:left; font-weight:600; border-bottom:1px solid var(--border);
+}
+.compare-table td {
+  padding:10px 16px; border-bottom:1px solid var(--border);
+  color:var(--text-secondary);
+}
+.compare-table tr:last-child td { border-bottom:none; }
+.compare-table tr:hover td { background:var(--bg-hover); }
+
+/* ============ Confetti ============ */
+.confetti-container {
+  position:fixed; inset:0; z-index:9999; pointer-events:none;
+}
+.confetti-piece {
+  position:absolute; width:10px; height:10px;
+  animation:confetti-fall linear forwards;
+}
+@keyframes confetti-fall {
+  0% { transform:translateY(-10vh) rotate(0deg); opacity:1; }
+  100% { transform:translateY(110vh) rotate(720deg); opacity:0; }
+}
+
+/* ============ Footer ============ */
+footer {
+  text-align:center; padding:60px 24px;
+  border-top:1px solid var(--border); margin-top:40px;
+  color:var(--text-secondary); font-size:14px;
+}
+footer .heart { color:var(--red); }
+
+/* ============ Pulse Dot ============ */
+.pulse-dot {
+  display:inline-block; width:8px; height:8px;
+  background:var(--green); border-radius:50%;
+  animation:pulse 2s ease-in-out infinite;
+  margin-right:6px;
+}
+@keyframes pulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(63,185,80,0.5); }
+  50% { box-shadow:0 0 0 8px rgba(63,185,80,0); }
+}
+
+/* ============ Responsive ============ */
+@media (max-width:640px) {
+  .hero { padding:48px 0 36px; }
+  .info-cards { grid-template-columns:1fr; }
+  .step-content { padding:0 16px 20px 16px; }
+  .step-header { padding:16px; }
+  .compare-table { font-size:12px; }
+  .compare-table th, .compare-table td { padding:8px 10px; }
+}
+
+/* ============ Scroll Indicator ============ */
+.scroll-indicator {
+  text-align:center; padding:20px 0; animation:bounce 2s infinite;
+}
+@keyframes bounce {
+  0%,100% { transform:translateY(0); opacity:1; }
+  50% { transform:translateY(8px); opacity:0.5; }
+}
+
+/* ============ Highlight fade-in for just-opened step ============ */
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(12px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.step.open .step-content { animation:fadeInUp 0.4s ease-out; }
+</style>
+</head>
+<body>
+
+<!-- Background Effects -->
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+<div class="bg-glow g3"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="logo">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub Pages 指南
+  </div>
+  <div class="progress-wrap">
+    <span class="progress-text">学习进度 <span id="progressPct">0</span>/6</span>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="hero-icon">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <defs>
+          <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#58a6ff"/>
+            <stop offset="100%" style="stop-color:#a371f7"/>
+          </linearGradient>
+        </defs>
+        <rect x="8" y="16" width="64" height="48" rx="8" fill="none" stroke="url(#hg)" stroke-width="3"/>
+        <path d="M8 28 L40 40 L72 28" fill="none" stroke="url(#hg)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="40" cy="40" r="6" fill="#3fb950"/>
+        <path d="M16 52 L32 44 M48 44 L64 52" stroke="url(#hg)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>GitHub Pages<br>从零到上线</h1>
+    <p>不用买服务器，不用配域名，5 分钟把你的网页免费部署到全世界。</p>
+    <div class="badge-row">
+      <span class="badge"><span class="dot green"></span> 完全免费</span>
+      <span class="badge"><span class="dot blue"></span> 无需后端</span>
+      <span class="badge"><span class="dot purple"></span> 自动 HTTPS</span>
+    </div>
+    <div class="scroll-indicator" style="margin-top:40px;">
+      <span style="color:var(--text-secondary); font-size:14px;">往下滑，开始学习 ↓</span>
+    </div>
+  </section>
+
+  <!-- ============ What is GitHub Pages ============ -->
+  <section class="section" id="s0">
+    <div class="section-title"><span class="num" style="background:linear-gradient(135deg,#3fb950,#58a6ff)">?</span> 这是什么？</div>
+    <p class="section-subtitle">一句话讲清楚 GitHub Pages 是什么</p>
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="card-icon">🌐</div>
+        <h4>免费静态网站托管</h4>
+        <p>GitHub 免费帮你把 HTML/CSS/JS 文件变成一个真正的网站，全世界都能访问。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-icon">⚡</div>
+        <h4>自动部署</h4>
+        <p>只要把代码推送到 GitHub 仓库，网站自动更新。改一行代码，网站就变。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-icon">🔒</div>
+        <h4>自带 HTTPS + 域名</h4>
+        <p>自动获得 <code>用户名.github.io</code> 域名和安全证书，什么都不用配置。</p>
+      </div>
+    </div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div>适合放什么？个人主页、项目文档、博客、作品集、产品 Landing Page、婚礼请柬……总之，<strong>不需要后端数据库</strong>的网站都能放。</div>
+    </div>
+  </section>
+
+  <!-- ============ Step 1 ============ -->
+  <section class="section" id="s1">
+    <div class="section-title"><span class="num">1</span> 注册 GitHub 账号</div>
+    <p class="section-subtitle">一切开始的地方</p>
+
+    <div class="step" id="step1">
+      <div class="step-header" onclick="toggleStep('step1')">
+        <div class="step-num s1">1</div>
+        <div class="step-info">
+          <h3>创建你的 GitHub 账号</h3>
+          <span class="step-brief">2 分钟 · 免费 · 需要邮箱</span>
+        </div>
+        <span class="step-arrow">▾</span>
+      </div>
+      <div class="step-body">
+        <div class="step-content">
+          <p>打开 <a href="https://github.com" target="_blank" style="color:var(--accent)">github.com</a>，点击右上角 <strong>Sign up</strong>。</p>
+          <ul>
+            <li>输入你的邮箱（推荐常用邮箱，QQ邮箱也行）</li>
+            <li>设置密码和用户名（用户名会出现在你的网站地址里，<strong>想好再填</strong>）</li>
+            <li>完成验证码，点击创建账号</li>
+            <li>收到验证邮件后，在邮件里点确认</li>
+          </ul>
+          <div class="tip warning">
+            <span class="tip-icon">⚠️</span>
+            <div>用户名很重要！你的网站地址会是 <code style="color:var(--accent)">你的用户名.github.io</code>，选一个你愿意展示给别人看的名字。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Step 2 ============ -->
+  <section class="section" id="s2">
+    <div class="section-title"><span class="num">2</span> 创建一个仓库</div>
+    <p class="section-subtitle">仓库 = 存放网站文件的地方</p>
+
+    <div class="step" id="step2">
+      <div class="step-header" onclick="toggleStep('step2')">
+        <div class="step-num s2">2</div>
+        <div class="step-info">
+          <h3>新建 GitHub 仓库</h3>
+          <span class="step-brief">1 分钟 · 仓库名有讲究</span>
+        </div>
+        <span class="step-arrow">▾</span>
+      </div>
+      <div class="step-body">
+        <div class="step-content">
+          <p>登录后，点击右上角 <strong>+</strong> → <strong>New repository</strong>。</p>
+          <p><strong>仓库名有两种选择：</strong></p>
+          <table class="compare-table">
+            <tr><th>类型</th><th>仓库名</th><th>网站地址</th></tr>
+            <tr>
+              <td>个人/组织主页</td>
+              <td><code style="color:var(--accent)">用户名.github.io</code></td>
+              <td>https://用户名.github.io</td>
+            </tr>
+            <tr>
+              <td>项目页面</td>
+              <td><code>任意名字</code></td>
+              <td>https://用户名.github.io/仓库名</td>
+            </tr>
+          </table>
+          <ul>
+            <li><strong>Public</strong> 必须选公开（免费账户公开仓库才能用 Pages）</li>
+            <li>勾选 <strong>Add a README file</strong>（可选，方便后面操作）</li>
+            <li>点击 <strong>Create repository</strong></li>
+          </ul>
+          <div class="tip">
+            <span class="tip-icon">🔑</span>
+            <div>如果你是新手，建议直接用 <strong>用户名.github.io</strong> 作为仓库名。一个账号只能有一个这种仓库，它会自动开启 Pages 功能。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Step 3 ============ -->
+  <section class="section" id="s3">
+    <div class="section-title"><span class="num">3</span> 上传你的网页文件</div>
+    <p class="section-subtitle">把 HTML 文件放进仓库</p>
+
+    <div class="step" id="step3">
+      <div class="step-header" onclick="toggleStep('step3')">
+        <div class="step-num s3">3</div>
+        <div class="step-info">
+          <h3>3 种上传方式，任选一种</h3>
+          <span class="step-brief">按自己水平选最简单的方式</span>
+        </div>
+        <span class="step-arrow">▾</span>
+      </div>
+      <div class="step-body">
+        <div class="step-content">
+          <p><strong>方式一：网页直接上传（推荐小白）</strong></p>
+          <ul>
+            <li>进入仓库页面，点击 <strong>Add file</strong> → <strong>Upload files</strong></li>
+            <li>把你的 <code>index.html</code> 和其他文件拖进去</li>
+            <li>下面写一句描述（比如"第一次上传"），点 <strong>Commit changes</strong></li>
+          </ul>
+
+          <p style="margin-top:16px;"><strong>方式二：在网页上直接创建（超快）</strong></p>
+          <ul>
+            <li>进入仓库，点击 <strong>Add file</strong> → <strong>Create new file</strong></li>
+            <li>文件名填 <code>index.html</code></li>
+            <li>粘贴你的 HTML 代码，点 Commit</li>
+          </ul>
+
+          <p style="margin-top:16px;"><strong>方式三：Git 命令行（进阶）</strong></p>
+          <div class="terminal">
+            <div class="terminal-bar">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+            </div>
+            <pre><span class="prompt">$</span> <span class="cmd">git clone</span> https://github.com/用户名/用户名.github.io.git
+<span class="prompt">$</span> <span class="cmd">cd</span> 用户名.github.io
+<span class="prompt">$</span> <span class="cmd">echo</span> '<span class="string">&lt;h1&gt;Hello World&lt;/h1&gt;</span>' > index.html
+<span class="prompt">$</span> <span class="cmd">git add</span> . && <span class="cmd">git commit -m</span> <span class="string">"first deploy"</span>
+<span class="prompt">$</span> <span class="cmd">git push</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Step 4 ============ -->
+  <section class="section" id="s4">
+    <div class="section-title"><span class="num">4</span> 开启 GitHub Pages</div>
+    <p class="section-subtitle">让网站真正上线</p>
+
+    <div class="step" id="step4">
+      <div class="step-header" onclick="toggleStep('step4')">
+        <div class="step-num s4">4</div>
+        <div class="step-info">
+          <h3>设置 Pages 并等待部署</h3>
+          <span class="step-brief">2 分钟 · 最重要的一步</span>
+        </div>
+        <span class="step-arrow">▾</span>
+      </div>
+      <div class="step-body">
+        <div class="step-content">
+          <p>进入仓库页面 → 顶部点 <strong>Settings</strong> → 左侧菜单点 <strong>Pages</strong>。</p>
+          <ul>
+            <li><strong>Source</strong>：选择 <strong>Deploy from a branch</strong></li>
+            <li><strong>Branch</strong>：选择 <strong>main</strong>（或 master），目录选 <strong>/(root)</strong></li>
+            <li>点击 <strong>Save</strong></li>
+          </ul>
+          <p>保存后，GitHub 会自动开始部署。稍等 1-2 分钟，刷新页面。</p>
+          <p>页面顶部会出现：<span style="color:var(--green); font-weight:600;">✅ Your site is live at https://用户名.github.io</span></p>
+          <div class="tip">
+            <span class="tip-icon">⏱️</span>
+            <div>如果仓库名是 <strong>用户名.github.io</strong>，推代码后会自动部署，不需要手动去 Settings 开启。但手动确认一下更放心。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Step 5 ============ -->
+  <section class="section" id="s5">
+    <div class="section-title"><span class="num">5</span> 访问你的网站</div>
+    <p class="section-subtitle">恭喜，你的网站上线了！</p>
+
+    <div class="step" id="step5">
+      <div class="step-header" onclick="toggleStep('step5')">
+        <div class="step-num s5">5</div>
+        <div class="step-info">
+          <h3>打开浏览器，输入网址</h3>
+          <span class="step-brief">看到页面就是成功了 🎉</span>
+        </div>
+        <span class="step-arrow">▾</span>
+      </div>
+      <div class="step-body">
+        <div class="step-content">
+          <p>在浏览器地址栏输入：<code style="color:var(--accent); font-size:16px;">https://你的用户名.github.io</code>，回车。</p>
+          <p>能看到你的网页，就算成功了！把这个链接发给朋友，他们在自己手机上也能打开。</p>
+
+          <div class="terminal" style="margin-top:16px;">
+            <div class="terminal-bar">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+            </div>
+            <pre><span class="output"># 一个典型的 GitHub Pages 地址
+https://zhangsan.github.io
+https://zhangsan.github.io/my-project</span></pre>
+          </div>
+
+          <p style="margin-top:16px;"><strong>没看到页面怎么办？</strong></p>
+          <ul>
+            <li>确认仓库是 <strong>Public</strong>（Settings → 拉到最下面 Danger Zone 可以看到）</li>
+            <li>确认仓库根目录有 <code>index.html</code> 文件</li>
+            <li>等几分钟，首次部署需要一点时间</li>
+            <li>去 Settings → Pages 看有没有红色报错</li>
+            <li>清除浏览器缓存再试（Ctrl+Shift+R）</li>
+          </ul>
+
+          <button class="code-copy" style="margin-top:12px; padding:8px 20px; font-size:14px;" onclick="celebrate()">
+            🎉 点我庆祝一下
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Step 6 ============ -->
+  <section class="section" id="s6">
+    <div class="section-title"><span class="num">6</span> 更新网站 & 进阶玩法</div>
+    <p class="section-subtitle">网站上线只是开始</p>
+
+    <div class="step" id="step6">
+      <div class="step-header" onclick="toggleStep('step6')">
+        <div class="step-num s6">6</div>
+        <div class="step-info">
+          <h3>日常更新 & 更多可能</h3>
+          <span class="step-brief">改文件 → Commit → 自动生效</span>
+        </div>
+        <span class="step-arrow">▾</span>
+      </div>
+      <div class="step-body">
+        <div class="step-content">
+          <p><strong>如何更新网站？</strong>改完文件 → 上传/Commit → 等 30 秒 → 刷新网站，完事。</p>
+
+          <p style="margin-top:16px;"><strong>进阶玩法：</strong></p>
+          <table class="compare-table">
+            <tr><th>玩法</th><th>怎么做</th></tr>
+            <tr><td>绑定自己的域名</td><td>Settings → Pages → Custom domain，然后在域名商加一条 CNAME 记录</td></tr>
+            <tr><td>用 Jekyll 主题</td><td>Settings → Pages → Theme Chooser，一键换模板</td></tr>
+            <tr><td>用静态网站生成器</td><td>Hugo / Hexo / VuePress / Next.js 导出 → 推到仓库即上线</td></tr>
+            <tr><td>GitHub Actions 自动构建</td><td>写一个 .github/workflows 文件，推代码自动编译部署</td></tr>
+            <tr><td>多页面网站</td><td>在仓库里创建 about.html、contact.html 等，自动生成对应路径</td></tr>
+          </table>
+
+          <div class="tip">
+            <span class="tip-icon">📚</span>
+            <div>官方文档：<a href="https://docs.github.com/pages" target="_blank" style="color:var(--accent)">docs.github.com/pages</a> — 遇到问题先查这里。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Checklist Summary ============ -->
+  <section class="section" id="s7">
+    <div class="section-title"><span class="num" style="background:linear-gradient(135deg,var(--green),var(--accent))">✓</span> 完成清单</div>
+    <p class="section-subtitle">对照检查，看看是不是都搞定了</p>
+    <div class="info-cards">
+      <div class="info-card" style="cursor:pointer" onclick="this.classList.toggle('done'); updateChecklist()">
+        <div class="card-icon" style="transition:0.3s">☐</div>
+        <h4>注册 GitHub 账号</h4>
+        <p>有一个可用的 GitHub 账号</p>
+      </div>
+      <div class="info-card" style="cursor:pointer" onclick="this.classList.toggle('done'); updateChecklist()">
+        <div class="card-icon" style="transition:0.3s">☐</div>
+        <h4>创建仓库</h4>
+        <p>仓库名是 用户名.github.io，设为 Public</p>
+      </div>
+      <div class="info-card" style="cursor:pointer" onclick="this.classList.toggle('done'); updateChecklist()">
+        <div class="card-icon" style="transition:0.3s">☐</div>
+        <h4>上传 index.html</h4>
+        <p>仓库根目录有 index.html 文件</p>
+      </div>
+      <div class="info-card" style="cursor:pointer" onclick="this.classList.toggle('done'); updateChecklist()">
+        <div class="card-icon" style="transition:0.3s">☐</div>
+        <h4>开启 Pages</h4>
+        <p>Settings → Pages 已设置好</p>
+      </div>
+      <div class="info-card" style="cursor:pointer" onclick="this.classList.toggle('done'); updateChecklist()">
+        <div class="card-icon" style="transition:0.3s">☐</div>
+        <h4>能访问网站</h4>
+        <p>浏览器打开 用户名.github.io 能看到内容</p>
+      </div>
+      <div class="info-card" style="cursor:pointer" onclick="this.classList.toggle('done'); updateChecklist()">
+        <div class="card-icon" style="transition:0.3s">☐</div>
+        <h4>把链接发给朋友</h4>
+        <p>朋友在手机上也能打开 ✓</p>
+      </div>
+    </div>
+    <p style="text-align:center; color:var(--text-secondary); margin-top:12px; font-size:14px;">点击卡片勾选已完成的项目 👆</p>
+  </section>
+
+</div>
+
+<footer>
+  <p>Made with <span class="heart">❤</span> · GitHub Pages 入门指南 · 现在就去部署你的第一个网站吧</p>
+</footer>
+
+<!-- Confetti Container -->
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+// ============ Scroll Reveal ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+// ============ Step Toggle ============
+function toggleStep(id) {
+  const step = document.getElementById(id);
+  step.classList.toggle('open');
+  updateProgress();
+
+  // Scroll step into view slightly
+  if (step.classList.contains('open')) {
+    setTimeout(() => {
+      step.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }, 100);
+  }
+}
+
+// ============ Progress Tracker ============
+function updateProgress() {
+  const steps = document.querySelectorAll('.step');
+  let opened = 0;
+  steps.forEach(s => { if (s.classList.contains('open')) opened++; });
+  const pct = Math.round((opened / steps.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = opened;
+}
+
+// ============ Checklist ============
+function updateChecklist() {
+  const cards = document.querySelectorAll('#s7 .info-card');
+  cards.forEach(card => {
+    const icon = card.querySelector('.card-icon');
+    if (card.classList.contains('done')) {
+      icon.textContent = '✅';
+    } else {
+      icon.textContent = '☐';
+    }
+  });
+
+  const done = document.querySelectorAll('#s7 .info-card.done').length;
+  if (done === 6) celebrate();
+}
+
+// ============ Confetti Celebration ============
+function celebrate() {
+  const container = document.getElementById('confetti');
+  const colors = ['#58a6ff','#3fb950','#d29922','#a371f7','#f85149','#79c0ff','#7ee787','#ffa657'];
+
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.width = (Math.random() * 10 + 6) + 'px';
+    piece.style.height = (Math.random() * 10 + 6) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => { container.innerHTML = ''; }, 4000);
+}
+
+// ============ Code Copy Buttons ============
+document.querySelectorAll('.code-copy').forEach(btn => {
+  if (btn.textContent.includes('庆祝')) return; // skip celebrate btn
+  btn.addEventListener('click', function() {
+    const code = this.closest('.code-block')?.querySelector('code')?.innerText;
+    if (code) {
+      navigator.clipboard.writeText(code).then(() => {
+        this.textContent = '已复制 ✓';
+        this.classList.add('copied');
+        setTimeout(() => {
+          this.textContent = '复制';
+          this.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  });
+});
+
+// ============ Terminal Copy ============
+document.querySelectorAll('.terminal').forEach(term => {
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'code-copy';
+  copyBtn.textContent = '复制';
+  copyBtn.style.cssText = 'position:absolute;top:8px;right:12px;z-index:10;border:none;';
+  copyBtn.addEventListener('click', () => {
+    const text = term.querySelector('pre')?.innerText;
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = '已复制 ✓';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = '复制';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  });
+  term.style.position = 'relative';
+  term.appendChild(copyBtn);
+});
+
+// ============ Initial open first step ============
+setTimeout(() => {
+  document.getElementById('step1').classList.add('open');
+  updateProgress();
+}, 600);
+
+// ============ Keyboard: press Enter on focused step ============
+document.querySelectorAll('.step-header').forEach(header => {
+  header.setAttribute('tabindex', '0');
+  header.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      header.click();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
