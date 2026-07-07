@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 助手能力全景图</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2330;
+    --accent-blue: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-orange: #f0883e;
+    --accent-red: #f85149;
+    --accent-purple: #bc8cff;
+    --accent-yellow: #e3b341;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --border: #30363d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ===== 动画关键帧 ===== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-50px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes dash {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+  @keyframes blink {
+    50% { border-color: transparent; }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { transform: scale(1.1); }
+    70% { transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(88,166,255,0.3); }
+    50% { box-shadow: 0 0 40px rgba(88,166,255,0.6); }
+  }
+  @keyframes progressBar {
+    from { width: 0%; }
+  }
+  @keyframes rotateIn {
+    from { opacity: 0; transform: rotate(-180deg) scale(0); }
+    to { opacity: 1; transform: rotate(0) scale(1); }
+  }
+
+  /* ===== 通用 ===== */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    position: relative;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* ===== Hero ===== */
+  #hero {
+    text-align: center;
+    background: radial-gradient(ellipse at center, #1a2335 0%, var(--bg-primary) 70%);
+    overflow: hidden;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(88,166,255,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(188,140,255,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(63,185,80,0.05) 0%, transparent 40%);
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .hero-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 30px;
+    animation: rotateIn 1s ease-out, float 4s ease-in-out infinite 1s;
+  }
+
+  .hero-title {
+    font-size: 52px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--accent-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.3s forwards;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto 16px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.6s forwards;
+  }
+
+  .hero-tagline {
+    font-size: 16px;
+    color: var(--accent-blue);
+    font-weight: 500;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.9s forwards;
+  }
+
+  .hero-tagline span {
+    display: inline-block;
+    border-bottom: 2px solid var(--accent-blue);
+    padding-bottom: 2px;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: var(--text-secondary);
+    animation: float 2s ease-in-out infinite;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 1.5s forwards, float 2s ease-in-out infinite 1.5s;
+  }
+
+  .scroll-hint svg {
+    display: block;
+    margin: 8px auto 0;
+  }
+
+  /* ===== 核心理念 ===== */
+  #concept {
+    background: var(--bg-secondary);
+  }
+
+  .concept-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .concept-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(88,166,255,0.05), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  .concept-quote {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .concept-quote .highlight {
+    color: var(--accent-blue);
+  }
+
+  .concept-quote .highlight-green {
+    color: var(--accent-green);
+  }
+
+  .concept-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .concept-formula {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+
+  .formula-item {
+    background: rgba(88,166,255,0.1);
+    border: 1px solid rgba(88,166,255,0.3);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--accent-blue);
+  }
+
+  .formula-plus {
+    font-size: 24px;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+
+  .formula-result {
+    background: rgba(63,185,80,0.1);
+    border: 1px solid rgba(63,185,80,0.3);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-green);
+  }
+
+  /* ===== 擅长领域 ===== */
+  #strengths {
+    background: var(--bg-primary);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .section-title {
+    font-size: 38px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  .section-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  .strengths-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .strength-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .strength-card.visible {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .strength-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 12px 40px rgba(88,166,255,0.15);
+  }
+
+  .strength-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+    z-index: 0;
+  }
+
+  .strength-card:nth-child(1)::after { background: var(--accent-blue); }
+  .strength-card:nth-child(2)::after { background: var(--accent-purple); }
+  .strength-card:nth-child(3)::after { background: var(--accent-green); }
+  .strength-card:nth-child(4)::after { background: var(--accent-orange); }
+
+  .card-number {
+    position: absolute;
+    top: 20px;
+    right: 28px;
+    font-size: 48px;
+    font-weight: 900;
+    opacity: 0.08;
+    z-index: 0;
+  }
+
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .strength-card:nth-child(1) .card-icon { background: rgba(88,166,255,0.15); }
+  .strength-card:nth-child(2) .card-icon { background: rgba(188,140,255,0.15); }
+  .strength-card:nth-child(3) .card-icon { background: rgba(63,185,80,0.15); }
+  .strength-card:nth-child(4) .card-icon { background: rgba(240,136,62,0.15); }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-items {
+    list-style: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-items li {
+    font-size: 15px;
+    color: var(--text-secondary);
+    padding: 6px 0;
+    padding-left: 24px;
+    position: relative;
+  }
+
+  .card-items li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .strength-card:nth-child(1) .card-items li::before { background: var(--accent-blue); }
+  .strength-card:nth-child(2) .card-items li::before { background: var(--accent-purple); }
+  .strength-card:nth-child(3) .card-items li::before { background: var(--accent-green); }
+  .strength-card:nth-child(4) .card-items li::before { background: var(--accent-orange); }
+
+  /* ===== 不足之处 ===== */
+  #weaknesses {
+    background: var(--bg-secondary);
+  }
+
+  .weaknesses-list {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .weakness-item {
+    display: flex;
+    gap: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent-red);
+    border-radius: 14px;
+    padding: 28px 32px;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.3s ease;
+  }
+
+  .weakness-item.visible {
+    animation: fadeInLeft 0.6s ease-out forwards;
+  }
+
+  .weakness-item:hover {
+    border-left-color: var(--accent-orange);
+    transform: translateX(8px);
+  }
+
+  .weakness-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(248,81,73,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .weakness-content { flex: 1; }
+
+  .weakness-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--accent-red);
+  }
+
+  .weakness-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .weakness-tag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: rgba(248,81,73,0.1);
+    color: var(--accent-red);
+  }
+
+  /* ===== 总结 ===== */
+  #summary {
+    background: var(--bg-primary);
+    text-align: center;
+  }
+
+  .summary-box {
+    max-width: 800px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 56px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .summary-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(88,166,255,0.1), transparent 70%);
+  }
+
+  .summary-title {
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .summary-text {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 2;
+    position: relative;
+  }
+
+  .summary-text strong {
+    color: var(--accent-blue);
+    font-weight: 700;
+  }
+
+  .summary-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-number {
+    font-size: 42px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 768px) {
+    .hero-title { font-size: 36px; }
+    .strengths-grid { grid-template-columns: 1fr; }
+    .concept-quote { font-size: 20px; }
+    .section-title { font-size: 28px; }
+    .summary-box { padding: 36px 24px; }
+    .summary-stats { gap: 24px; }
+    .stat-number { font-size: 32px; }
+  }
+
+  /* ===== 进度条指示器 ===== */
+  .progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    z-index: 9999;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-green));
+    width: 0%;
+    transition: width 0.1s ease;
+  }
+
+  /* ===== 导航点 ===== */
+  .nav-dots {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 999;
+  }
+
+  .nav-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .nav-dot.active {
+    background: var(--accent-blue);
+    transform: scale(1.4);
+  }
+</style>
+</head>
+<body>
+
+<!-- 进度条 -->
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- 导航点 -->
+<div class="nav-dots" id="navDots">
+  <div class="nav-dot active" data-target="hero"></div>
+  <div class="nav-dot" data-target="concept"></div>
+  <div class="nav-dot" data-target="strengths"></div>
+  <div class="nav-dot" data-target="weaknesses"></div>
+  <div class="nav-dot" data-target="summary"></div>
+</div>
+
+<!-- ===== Hero ===== -->
+<section class="section" id="hero">
+  <div class="container">
+    <svg class="hero-icon" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="45" stroke="url(#grad1)" stroke-width="2" stroke-dasharray="283" stroke-dashoffset="283" style="animation: dash 2s ease-out forwards 0.5s;"/>
+      <path d="M50 25 L50 50 L70 60" stroke="var(--accent-blue)" stroke-width="3" stroke-linecap="round" fill="none" opacity="0" style="animation: fadeInUp 1s ease-out forwards 1.5s;"/>
+      <circle cx="50" cy="50" r="6" fill="var(--accent-blue)" opacity="0" style="animation: bounceIn 0.5s ease-out forwards 2s;"/>
+      <defs>
+        <linearGradient id="grad1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#58a6ff"/>
+          <stop offset="50%" stop-color="#bc8cff"/>
+          <stop offset="100%" stop-color="#3fb950"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <h1 class="hero-title">AI 助手能力全景图</h1>
+    <p class="hero-subtitle">辅助的 AI 助手 · 能力放大器</p>
+    <p class="hero-tagline">在<span>给定框架</span>内，提供<span>准确要求与参数</span>，效率倍增</p>
+  </div>
+  <div class="scroll-hint">
+    向下滚动探索
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ===== 核心理念 ===== -->
+<section class="section" id="concept">
+  <div class="container">
+    <div class="concept-card reveal">
+      <div class="section-label" style="background: rgba(88,166,255,0.15); color: var(--accent-blue);">核心理念</div>
+      <p class="concept-quote">
+        AI 是一个 <span class="highlight">辅助助手</span> 和 <span class="highlight-green">能力放大器</span><br>
+        它不会替代你，但能让你的效率倍增
+      </p>
+      <p class="concept-desc">
+        前提是：你需要在给定的框架内，提供准确的要求和参数。<br>
+        框架越清晰，参数越精确，AI 放大效果越强。
+      </p>
+      <div class="concept-formula">
+        <div class="formula-item">📋 框架</div>
+        <span class="formula-plus">+</span>
+        <div class="formula-item">🎯 准确参数</div>
+        <span class="formula-plus">=</span>
+        <div class="formula-result">⚡ 效率倍增</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 擅长领域 ===== -->
+<section class="section" id="strengths">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label" style="background: rgba(63,185,80,0.15); color: var(--accent-green);">✓ 优势</div>
+      <h2 class="section-title">擅长领域</h2>
+      <p class="section-desc">四个方向，各有所长</p>
+    </div>
+    <div class="strengths-grid">
+      <!-- 卡片1 -->
+      <div class="strength-card reveal-item">
+        <span class="card-number">01</span>
+        <div class="card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M9 9h6v6H9z"/>
+            <path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>
+          </svg>
+        </div>
+        <h3 class="card-title">模型 / Agent</h3>
+        <ul class="card-items">
+          <li>陌生领域知识快速入门</li>
+          <li>输入输出参数明确的批量执行场景</li>
+        </ul>
+      </div>
+      <!-- 卡片2 -->
+      <div class="strength-card reveal-item">
+        <span class="card-number">02</span>
+        <div class="card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3 class="card-title">多模态生成</h3>
+        <ul class="card-items">
+          <li>文生文 / 文生图 / 文生视频</li>
+          <li>文本、表格、PPT 生成与处理汇总</li>
+          <li>图片生成与识别</li>
+          <li>AI 短剧、漫剧创作</li>
+        </ul>
+      </div>
+      <!-- 卡片3 -->
+      <div class="strength-card reveal-item">
+        <span class="card-number">03</span>
+        <div class="card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <h3 class="card-title">编程开发</h3>
+        <ul class="card-items">
+          <li>代码生成 / 补全</li>
+          <li>查 Bug 与问题定位</li>
+          <li>新技术快速上手</li>
+        </ul>
+      </div>
+      <!-- 卡片4 -->
+      <div class="strength-card reveal-item">
+        <span class="card-number">04</span>
+        <div class="card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="8" y1="13" x2="16" y2="13"/>
+            <line x1="8" y1="17" x2="16" y2="17"/>
+          </svg>
+        </div>
+        <h3 class="card-title">办公效率</h3>
+        <ul class="card-items">
+          <li>文本、表格、PPT 生成与处理</li>
+          <li>信息汇总与概要提取</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 不足之处 ===== -->
+<section class="section" id="weaknesses">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label" style="background: rgba(248,81,73,0.15); color: var(--accent-red);">⚠ 局限</div>
+      <h2 class="section-title">缺点与不足</h2>
+      <p class="section-desc">认知边界，方能更好地驾驭</p>
+    </div>
+    <div class="weaknesses-list">
+      <div class="weakness-item reveal-item">
+        <div class="weakness-icon">🌀</div>
+        <div class="weakness-content">
+          <h3 class="weakness-title">幻觉问题</h3>
+          <p class="weakness-desc">AI 会生成看似合理但实际不正确的信息。需要精确数据的任务中，可信度不高，必须人工核验关键数据与事实。</p>
+          <span class="weakness-tag">影响：数据可信度</span>
+        </div>
+      </div>
+      <div class="weakness-item reveal-item">
+        <div class="weakness-icon">📏</div>
+        <div class="weakness-content">
+          <h3 class="weakness-title">上下文窗口有限</h3>
+          <p class="weakness-desc">上下文容量仍不够大，在压缩上下文时容易丢失关键信息。长链条复杂任务容错率低，中间环节出错难以自动恢复。</p>
+          <span class="weakness-tag">影响：长任务可靠性</span>
+        </div>
+      </div>
+      <div class="weakness-item reveal-item">
+        <div class="weakness-icon">💻</div>
+        <div class="weakness-content">
+          <h3 class="weakness-title">编程：快但不够好</h3>
+          <p class="weakness-desc">
+            生成速度快，但隐性问题多：经常忽略边界条件、异常处理和安全漏洞；虚构 API 参数、编造不存在的接口。表面能跑，深挖有坑。
+          </p>
+          <span class="weakness-tag">影响：代码质量与安全</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 总结 ===== -->
+<section class="section" id="summary">
+  <div class="container">
+    <div class="summary-box reveal">
+      <div class="section-label" style="background: rgba(188,140,255,0.15); color: var(--accent-purple); margin: 0 auto 20px;">总结</div>
+      <h2 class="summary-title">用好 AI 的关键</h2>
+      <p class="summary-text">
+        AI 是<strong>能力放大器</strong>，而非万能替代品。<br>
+        在<strong>擅长的领域</strong>内放手使用，在<strong>不足的领域</strong>保持警觉。<br>
+        提供清晰的<strong>框架</strong>与准确的<strong>参数</strong>，<br>
+        让 AI 成为你的效率杠杆，而非风险来源。
+      </p>
+      <div class="summary-stats">
+        <div class="stat-item">
+          <div class="stat-number">4</div>
+          <div class="stat-label">擅长领域</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">3</div>
+          <div class="stat-label">已知局限</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">放大潜力</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  AI 助手能力全景图 · 认知边界决定使用上限
+</div>
+
+<script>
+  // ===== 滚动进度条 =====
+  const progressBar = document.getElementById('progressBar');
+  const sections = document.querySelectorAll('.section');
+  const navDots = document.querySelectorAll('.nav-dot');
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.pageYOffset;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    progressBar.style.width = progress + '%';
+
+    // 导航点高亮
+    let current = '';
+    sections.forEach(section => {
+      const top = section.offsetTop;
+      if (scrollTop >= top - 200) {
+        current = section.id;
+      }
+    });
+    navDots.forEach(dot => {
+      dot.classList.toggle('active', dot.dataset.target === current);
+    });
+  });
+
+  // ===== 导航点点击跳转 =====
+  navDots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const target = document.getElementById(dot.dataset.target);
+      target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ===== 滚动揭示动画 =====
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        const items = entry.target.querySelectorAll('.reveal-item');
+        items.forEach((item, i) => {
+          setTimeout(() => {
+            item.classList.add('visible');
+          }, i * 150);
+        });
+        entry.target.classList.add('visible');
+        // 直接揭示的元素
+        if (entry.target.classList.contains('reveal') || entry.target.classList.contains('reveal-item')) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      }
+    });
+  }, observerOptions);
+
+  // 观察所有需要揭示的元素
+  document.querySelectorAll('.reveal, .reveal-item').forEach(el => {
+    if (el.classList.contains('reveal') && !el.classList.contains('reveal-item')) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    }
+    observer.observe(el);
+  });
+
+  // reveal 类直接动画
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    if (!el.classList.contains('reveal-item')) {
+      revealObserver.observe(el);
+    }
+  });
+</script>
+
+</body>
+</html>
