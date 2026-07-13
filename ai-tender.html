@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI招投标辅助系统 — 架构总览</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --bg-card: #16213e;
+    --bg-card-hover: #1c2b50;
+    --bg-foundation: #0d3b2e;
+    --bg-gate: #2d1b3d;
+    --text: #e0e0e0;
+    --text-muted: #a0a0b8;
+    --text-faint: #6a6a82;
+    --accent-blue: #4a9eff;
+    --accent-teal: #2dd4bf;
+    --accent-purple: #a78bfa;
+    --accent-amber: #fbbf24;
+    --accent-coral: #f87171;
+    --border: rgba(255,255,255,0.08);
+    --border-bright: rgba(255,255,255,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* ---- Header ---- */
+  .header { text-align: center; margin-bottom: 48px; }
+  .header h1 {
+    font-size: 28px; font-weight: 600; letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header .subtitle { font-size: 14px; color: var(--text-muted); }
+
+  /* ---- Foundation ---- */
+  .foundation {
+    background: linear-gradient(135deg, #0d3b2e 0%, #0a2e22 100%);
+    border: 1px solid rgba(45, 212, 191, 0.2);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 0;
+    position: relative;
+    box-shadow: 0 0 40px rgba(45, 212, 191, 0.05);
+  }
+  .foundation-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600;
+    color: var(--accent-teal);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .foundation-label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-teal); box-shadow: 0 0 8px var(--accent-teal); }
+  .foundation h2 {
+    font-size: 20px; font-weight: 600; color: #e0fbf3; margin-bottom: 4px;
+  }
+  .foundation-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+  .foundation-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  }
+  .foundation-item {
+    background: rgba(45, 212, 191, 0.06);
+    border: 1px solid rgba(45, 212, 191, 0.12);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+  .foundation-item:hover { background: rgba(45, 212, 191, 0.12); }
+  .foundation-item .fi-title { font-weight: 600; color: #6ee7d7; margin-bottom: 2px; }
+  .foundation-item .fi-desc { font-size: 12px; color: var(--text-muted); }
+  .foundation-item.data-object {
+    grid-column: span 3;
+    border-color: rgba(45, 212, 191, 0.3);
+    background: rgba(45, 212, 191, 0.1);
+  }
+  .foundation-item.data-object .fi-title { color: var(--accent-teal); }
+  .field-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .field-chip {
+    font-size: 11px; padding: 2px 10px; border-radius: 12px;
+    background: rgba(45,212,191,0.15); color: #6ee7d7; border: 1px solid rgba(45,212,191,0.2);
+  }
+
+  /* ---- Connecting bar ---- */
+  .connect-bar {
+    display: flex; justify-content: center; padding: 6px 0;
+  }
+  .connect-bar .pillars {
+    display: flex; justify-content: space-around; width: 100%;
+  }
+  .pillar {
+    width: 3px; height: 24px;
+    background: linear-gradient(to bottom, rgba(74,158,255,0.4), rgba(74,158,255,0.15));
+    border-radius: 2px;
+  }
+
+  /* ---- Pipeline ---- */
+  .pipeline {
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  /* ---- Agent Card ---- */
+  .agent-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+  }
+  .agent-card:hover { border-color: var(--border-bright); background: var(--bg-card-hover); }
+  .agent-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .agent-num {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .agent-num.blue { background: rgba(74,158,255,0.15); color: var(--accent-blue); border: 1px solid rgba(74,158,255,0.25); }
+  .agent-num.teal { background: rgba(45,212,191,0.15); color: var(--accent-teal); border: 1px solid rgba(45,212,191,0.25); }
+  .agent-num.purple { background: rgba(167,139,250,0.15); color: var(--accent-purple); border: 1px solid rgba(167,139,250,0.25); }
+  .agent-num.amber { background: rgba(251,191,36,0.15); color: var(--accent-amber); border: 1px solid rgba(251,191,36,0.25); }
+  .agent-num.coral { background: rgba(248,113,113,0.15); color: var(--accent-coral); border: 1px solid rgba(248,113,113,0.25); }
+  .agent-title { flex: 1; }
+  .agent-title h3 { font-size: 17px; font-weight: 600; }
+  .agent-title .agent-tag { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+  .agent-body { padding: 16px 28px 20px; }
+  .agent-body .note {
+    font-size: 12px; color: var(--accent-amber);
+    padding: 6px 12px; background: rgba(251,191,36,0.08);
+    border-radius: 8px; margin-bottom: 12px;
+    border-left: 3px solid rgba(251,191,36,0.4);
+  }
+
+  /* ---- Steps ---- */
+  .step-list { list-style: none; }
+  .step-item {
+    padding: 8px 0 8px 24px;
+    font-size: 13px;
+    position: relative;
+    border-left: 1px solid var(--border);
+    margin-left: 8px;
+  }
+  .step-item:last-child { border-left: 1px solid transparent; }
+  .step-item::before {
+    content: ""; position: absolute; left: -4px; top: 14px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent-blue); opacity: 0.5;
+  }
+  .step-item .step-head { font-weight: 600; color: var(--text); }
+  .step-item .step-desc { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+  .sub-list {
+    list-style: none; margin: 4px 0 4px 8px;
+  }
+  .sub-list li {
+    padding: 3px 0 3px 16px; font-size: 12px; color: var(--text-muted);
+    position: relative;
+  }
+  .sub-list li::before {
+    content: "—"; position: absolute; left: 0; color: var(--text-faint);
+  }
+
+  /* ---- Gate ---- */
+  .gate {
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px 0;
+    position: relative;
+  }
+  .gate-line {
+    width: 2px; height: 12px;
+    background: linear-gradient(to bottom, var(--border-bright), transparent);
+  }
+  .gate-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 20px;
+    background: var(--bg-gate);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 24px;
+    font-size: 13px; font-weight: 600;
+    color: var(--accent-purple);
+    box-shadow: 0 0 16px rgba(167,139,250,0.08);
+  }
+  .gate-badge .gate-icon {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent-purple);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--bg);
+    font-weight: 700;
+  }
+
+  /* ---- Arrow between agents ---- */
+  .flow-arrow {
+    display: flex; justify-content: center; padding: 4px 0;
+  }
+  .flow-arrow svg { width: 16px; height: 20px; }
+
+  /* ---- Feedback loop ---- */
+  .feedback-section {
+    margin-top: 8px;
+    border: 1px dashed rgba(45, 212, 191, 0.2);
+    border-radius: 16px;
+    padding: 20px 28px;
+    background: rgba(45, 212, 191, 0.03);
+    position: relative;
+  }
+  .feedback-label {
+    position: absolute; top: -12px; left: 24px;
+    background: var(--bg);
+    padding: 0 12px;
+    font-size: 12px; font-weight: 600;
+    color: var(--accent-teal);
+    letter-spacing: 1px;
+  }
+
+  /* ---- Data flow indicators ---- */
+  .data-flow-tag {
+    display: inline-block;
+    font-size: 11px; padding: 1px 8px; border-radius: 10px;
+    background: rgba(74,158,255,0.1); color: var(--accent-blue);
+    border: 1px solid rgba(74,158,255,0.15);
+    margin-left: 6px;
+  }
+  .data-flow-tag.write { background: rgba(45,212,191,0.1); color: var(--accent-teal); border-color: rgba(45,212,191,0.15); }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 768px) {
+    .foundation-grid { grid-template-columns: 1fr; }
+    .foundation-item.data-object { grid-column: span 1; }
+    .header h1 { font-size: 22px; }
+    .agent-header { padding: 16px 20px 12px; }
+    .agent-body { padding: 12px 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ========== Header ========== -->
+  <div class="header">
+    <h1>AI招投标辅助系统 — 架构总览</h1>
+    <p class="subtitle">统一数据底座 · 五段流水线 · 人工门控 · 结果反馈闭环</p>
+  </div>
+
+  <!-- ========== Pipeline ========== -->
+  <div class="pipeline">
+
+    <!-- ========== Agent 0: Foundation ========== -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-num teal">底</div>
+        <div class="agent-title">
+          <h3>零、知识库管理（系统数据底座）</h3>
+          <span class="agent-tag">全系统的数据地基 · 所有 Agent 共享读写</span>
+        </div>
+      </div>
+      <div class="agent-body">
+        <p class="note" style="color:var(--accent-teal); background:rgba(45,212,191,0.08); border-left-color:rgba(45,212,191,0.4);">
+          知识库是整个系统的底座。所有 Agent 的输入依赖它，输出回写它。没有它，分析和生成都是"无米之炊"。
+        </p>
+        <div class="foundation-grid">
+          <div class="foundation-item">
+            <div class="fi-title">公司资质管理</div>
+            <div class="fi-desc">营业执照、行业资质证书、专利等</div>
+          </div>
+          <div class="foundation-item">
+            <div class="fi-title">历史业绩库</div>
+            <div class="fi-desc">过往中标项目、合同、验收报告及客户评价</div>
+          </div>
+          <div class="foundation-item">
+            <div class="fi-title">人员证书管理</div>
+            <div class="fi-desc">技术人员资质、职称证书、社保证明</div>
+          </div>
+          <div class="foundation-item">
+            <div class="fi-title">技术方案库</div>
+            <div class="fi-desc">标准化技术方案模板与可复用模块组件</div>
+          </div>
+          <div class="foundation-item">
+            <div class="fi-title">历史投标文件库</div>
+            <div class="fi-desc">归档管理、版本追溯与复用检索</div>
+          </div>
+          <div class="foundation-item data-object">
+            <div class="fi-title">统一标书数据对象</div>
+            <div class="fi-desc">贯穿全流程的标准数据结构，各 Agent 共享读写</div>
+            <div class="field-chips">
+              <span class="field-chip">标书基本信息</span>
+              <span class="field-chip">分类标签</span>
+              <span class="field-chip">解析结果</span>
+              <span class="field-chip">评估结论</span>
+              <span class="field-chip">投标决策</span>
+              <span class="field-chip">生成状态</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection pillars -->
+    <div class="connect-bar">
+      <div class="pillars">
+        <div class="pillar"></div>
+        <div class="pillar"></div>
+        <div class="pillar"></div>
+        <div class="pillar"></div>
+        <div class="pillar"></div>
+      </div>
+    </div>
+
+    <!-- ========== Agent 1: 标书抓取 ========== -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-num blue">1</div>
+        <div class="agent-title">
+          <h3>一、标书抓取 Agent</h3>
+          <span class="agent-tag">数据获取入口 · 抓取标书信息与相关文档</span>
+        </div>
+      </div>
+      <div class="agent-body">
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-head">模拟登录</div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">抓取当天的标书信息，相关文档的下载</div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">生成获取标书的标准表格数据<span class="data-flow-tag write">写入 → 统一标书数据对象</span></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Flow arrow -->
+    <div class="flow-arrow">
+      <svg viewBox="0 0 16 20"><path d="M8 0 L8 14 M3 9 L8 14 L13 9" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <!-- ========== Agent 2: 标书分类 ========== -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-num blue">2</div>
+        <div class="agent-title">
+          <h3>二、标书分类 Agent</h3>
+          <span class="agent-tag">AI 识别项目类型 · 关注 / 不关注领域分类</span>
+        </div>
+      </div>
+      <div class="agent-body">
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-head">根据抓取的标书信息，AI 识别该招标项目的类型</div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">分类（关注领域和不关注领域）<span class="data-flow-tag write">写入 → 分类标签字段</span></div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">生成标书分类汇报的标准表格数据<span class="data-flow-tag write">更新 → 统一标书数据对象</span></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Gate 1 -->
+    <div class="gate">
+      <div class="gate-badge">
+        <span class="gate-icon">!</span>
+        人工审核门控 · 确认进入深度分析的标书清单
+      </div>
+    </div>
+
+    <!-- ========== Agent 3: 解析与分析 ========== -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-num blue">3</div>
+        <div class="agent-title">
+          <h3>三、标书解析与分析报告 Agent</h3>
+          <span class="agent-tag">文本提取 · 结构化解析 · 评估打分 · 生成报告</span>
+        </div>
+      </div>
+      <div class="agent-body">
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-head">获取关注领域的标书<span class="data-flow-tag">读取 ← 统一标书数据对象</span></div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">提取文本</div>
+            <div class="step-desc">将招标网页信息、PDF、Word、Excel 等相关数据进行识别和提取</div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">结构化解析<span class="data-flow-tag write">回填 → 统一标书数据对象</span></div>
+            <div class="step-desc">将相关数据进行过滤和解析，按字段回填</div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">验证交付<span class="data-flow-tag">读取 ← 知识库底座</span></div>
+            <div class="step-desc">综合知识库底座数据，对比标书要求，给出评估意见和打分</div>
+            <ul class="sub-list">
+              <li>项目概述（元数据 + 评分构成 + 关键时间节点）</li>
+              <li>评分策略（每项评分的目标得分 + 具体策略）</li>
+              <li>技术要求分析</li>
+              <li>商务要求分析</li>
+              <li>风险清单</li>
+              <li>资质准备清单</li>
+              <li>人员配置与证书要求</li>
+            </ul>
+          </li>
+          <li class="step-item">
+            <div class="step-head">生成 Word 分析报告<span class="data-flow-tag write">写入 → 评估结果字段</span></div>
+            <div class="step-desc">分析结论、评分总结、推荐 / 不推荐理由</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Gate 2 -->
+    <div class="gate">
+      <div class="gate-badge">
+        <span class="gate-icon">!</span>
+        投标决策门控 · 根据分析报告，人工决定是否投标、确定策略方向
+      </div>
+    </div>
+
+    <!-- ========== Agent 4: 投标生成 ========== -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-num blue">4</div>
+        <div class="agent-title">
+          <h3>四、投标自动生成 Agent</h3>
+          <span class="agent-tag">需求分析 · 框架生成 · 内容填充 · 检查优化</span>
+        </div>
+      </div>
+      <div class="agent-body">
+        <div class="note">
+          以 Agent 3 分析报告和投标决策门控结论为输入，严格基于分析结果驱动生成
+        </div>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-head">需求分析</div>
+            <ul class="sub-list">
+              <li>获取招标文件核心内容</li>
+              <li>基于分析报告匹配投标方核心优势与业绩</li>
+              <li>确认技术标 / 商务标的分值占比</li>
+            </ul>
+          </li>
+          <li class="step-item">
+            <div class="step-head">框架生成</div>
+            <ul class="sub-list">
+              <li>按评分标准生成文档结构</li>
+              <li>标注每个章节对应的得分项</li>
+              <li>建议各章节的篇幅和重点</li>
+            </ul>
+          </li>
+          <li class="step-item">
+            <div class="step-head">内容填充<span class="data-flow-tag">读取 ← 知识库底座（技术方案库 + 资质数据）</span></div>
+            <ul class="sub-list">
+              <li>技术方案：针对需求设计解决方案</li>
+              <li>项目实施：制定进度计划和保障措施</li>
+              <li>商务响应：资质证明和偏离表</li>
+            </ul>
+          </li>
+          <li class="step-item">
+            <div class="step-head">检查优化</div>
+            <ul class="sub-list">
+              <li>对照评分标准逐项检查覆盖度</li>
+              <li>排查废标风险（格式 / 签章 / 资质）</li>
+              <li>优化措辞提升专业度</li>
+              <li>去 AI 味检查</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Flow arrow -->
+    <div class="flow-arrow">
+      <svg viewBox="0 0 16 20"><path d="M8 0 L8 14 M3 9 L8 14 L13 9" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <!-- ========== Agent 5: 结果反馈 ========== -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-num coral">5</div>
+        <div class="agent-title">
+          <h3>五、投标结果反馈</h3>
+          <span class="agent-tag">记录结果 · 分析得失 · 回流知识库</span>
+        </div>
+      </div>
+      <div class="agent-body">
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-head">记录投标结果</div>
+            <div class="step-desc">中标 / 落标 / 流标</div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">汇总评审打分明细与扣分项分析</div>
+          </li>
+          <li class="step-item">
+            <div class="step-head">结果数据回流至知识库底座<span class="data-flow-tag write">写入 → 知识库底座</span></div>
+            <ul class="sub-list">
+              <li>中标项目：提取中标策略要素，丰富技术方案库和历史业绩库</li>
+              <li>落标项目：分析失分原因，优化后续标书分类策略和投标策略</li>
+              <li>归档投标文件全文与评审反馈到历史投标文件库</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /pipeline -->
+
+</div><!-- /container -->
+</body>
+</html>
