@@ -216,7 +216,7 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 </tr>
 </tbody>
 </table>
-<p><strong>结论（技术侧）</strong>：</p>
+<p><strong>结论</strong>：</p>
 <ul>
 <li><strong>数据引擎型（公考雷达）是当前选岗赛道真正的技术壁垒所在</strong>——不是 AI，而是"招考数据聚合 + 结构化解析 + 实时同步"的管线能力</li>
 <li>现有 AI 选岗产品（夜灯/上岸Claw）多为"LLM + 职位库"轻量组合，<strong>缺深度结构化匹配（专业三级目录）与动态策略</strong></li>
@@ -316,7 +316,7 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 - <strong>处理的问题</strong>：10 万+ 道行测/申论/面试真题 + 答案解析。<br />
 - <strong>怎么做的</strong>：爬取公开题源 → OCR + 人工校对 → 知识点打标 → 解析编写 → 入库。<br />
 - <strong>可能遇到的问题</strong>：<br />
-   1. 版权关（粉笔/中公/华图题库为商业资产，公开可合法获取的完整真题源极少）<br />
+   1. 版权关<br />
    2. 人力成本关（每道题 5~15 分钟 → 10 万题 ≈ 4~12 人年）<br />
    3. 答案解析本质是"知识生产"而非"数据处理"，自动化上限低<br />
 - <strong>结论</strong>：不是技术问题，是版权+人力成本问题；缓解路径只有采购/合作/众包/分步积累，自建 10 万题会严重超期超支。</p>
@@ -324,9 +324,9 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 - <strong>处理的问题</strong>：对申论大作文、面试回答给出"可信的分数"。<br />
 - <strong>怎么做的</strong>：LLM 结合评分维度生成评分 → 展示分数 + 点评。<br />
 - <strong>可能遇到的问题</strong>：<br />
-   1. 缺权威 ground truth（官方评分标准不公开，无法建立训练与评测基准）<br />
-   2. 相关性上限（LLM 与人工评分约 0.6~0.8，不足以承担"权威评分"）<br />
-   3. 责任关（错误评分直接影响考生判断，无法兜底）<br />
+   1. 缺权威评分基准<br />
+   2. LLM 与人工评分相关性约 0.6~0.8<br />
+   3. 错误评分直接影响考生判断，无法兜底<br />
 - <strong>结论</strong>："权威评分"当前不能实现；可降级为"AI 参考点评"（结构化的优点/不足/建议，明确非评分）——立项时应主动放弃"AI 判分"卖点。</p>
 <h4 id="2-1-2-选岗匹配引擎">2.1.2 选岗匹配引擎</h4>
 <table>
@@ -371,7 +371,7 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 </tbody>
 </table>
 <p><div class="tp-head"><span class="tp-badge">技术点 1</span><span class="tp-title">职位表结构化入库</span></div><br />
-- <strong>处理的问题</strong>：把官方发布的《招考简章.zip》（Excel 职位表，2026 年 20,714 岗位 / 38,119 人）转成结构化数据库。<br />
+- <strong>处理的问题</strong>：把官方发布的《招考简章.zip》转成结构化数据库。<br />
 - <strong>怎么做的</strong>：官方专题站"相关下载"获取 Excel → openpyxl/pandas 解析 → 字段映射标准化（枚举字段编码化、空值统一）→ <code>year</code> 分区表 + 年度导入脚本 + 对账任务。<br />
 - <strong>可能遇到的问题</strong>：<br />
    1. 每年表头/格式可能微调 → 字段映射必须配置化，不能硬编码列名<br />
@@ -396,25 +396,23 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 - <strong>处理的问题</strong>：预测某岗位最终报名人数、竞争比、进面分数线。<br />
 - <strong>怎么做的</strong>：历史进面分 + 报名增量 + 岗位特征做回归/时序模型 → 输出预测值。<br />
 - <strong>可能遇到的问题</strong>：<br />
-   1. 样本极稀疏（每岗位每年只有 1 个最终值，年份间分布漂移大）<br />
-   2. 不可观测变量（弃考率、改报行为、跟风心理无法建模）<br />
-   3. 验证关（回测结果不能代表当年，前向验证只能在次年事后对账）<br />
+   1. 样本极稀疏，每岗位每年只有 1 个最终值且年份间分布漂移大<br />
+   2. 弃考率、改报行为、跟风心理无法建模<br />
+   3. 回测结果不能代表当年，前向验证只能在次年事后对账<br />
 - <strong>结论</strong>：高精度预测不可实现（数据结构决定）；可降级为"参考区间 + 实时展示"（第 4~6 天当日竞争比本身是强信号），产品承诺务必降级。</p>
 <p><div class="tp-head"><span class="tp-badge">技术点 5</span><span class="tp-title">招录政策的年度变动预测</span></div><br />
 - <strong>处理的问题</strong>：预判明年招录规模、专业范围、应届政策的调整。<br />
 - <strong>怎么做的</strong>：对历史政策数据建模 → 预测下一年政策。<br />
 - <strong>可能遇到的问题</strong>：<br />
    1. 政策由行政决策驱动，无公开可建模的确定规律，历史上规模/年龄/倾斜比例均出现无规律调整<br />
-   2. 验证关——无法对"未发生的事件"建立可验证模型<br />
+   2. 无法对"未发生的事件"建立可验证模型<br />
 - <strong>结论</strong>：预测不可实现；应对是<strong>架构配置化</strong>（招考规则做成年度配置项，公告发布后 1 周内完成切换），把"年度适配流程"当工程能力建设。</p>
 <p><div class="tp-head"><span class="tp-badge">技术点 6</span><span class="tp-title">官方限制瓶颈（无 API / 实时数据延迟 / 反爬红线）</span></div><br />
 - <strong>处理的问题</strong>：① 官方提供 API 直接取数；② 竞争比分钟级实时；③ 高效抓取官方报名系统。<br />
-- <strong>怎么做的</strong>：公告期窗口采集官方公开数据 + 每日同步节奏 + 合规采集三原则（只抓公开页、守 robots 控频、注明来源）。<br />
+- <strong>怎么做的</strong>：公告期窗口采集官方公开数据 + 每日同步节奏 + 合规采集三原则：只抓公开页、守 robots 控频、注明来源。<br />
 - <strong>可能遇到的问题</strong>：<br />
-   1. 治理关（官方不提供公开 API 且无开放计划<br />
-   2. 官方报名人数每日只更新一次 → 产品天然存在"一日延迟"，任何技术无法突破）<br />
-   3. 法律关（突破反爬可能触犯非法获取计算机信息系统数据罪<br />
-   4. 公务员及报考人员个人信息受法律严格保护，采集即违法——<strong>能做≠能上</strong>）<br />
+   1. 官方不提供公开 API 且无开放计划，报名人数每日只更新一次，产品天然存在"一日延迟"<br />
+   2. 突破反爬可能触犯非法获取计算机信息系统数据罪，报考人员个人信息受法律严格保护——<strong>能做≠能上</strong><br />
 - <strong>结论</strong>：数据获取受治理+法律双重约束，技术上不可绕过；合规采集已覆盖产品 90% 数据需求（职位表/专业目录/每日过审人数均为官方公开），产品设计围绕"每日更新"节奏，并作为立项红线写死。</p>
 <h4 id="2-1-3-ai-能力层">2.1.3 AI 能力层</h4>
 <table>
@@ -466,8 +464,8 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 - <strong>处理的问题</strong>：让 LLM 永不输出编造的岗位、条件、政策。<br />
 - <strong>怎么做的</strong>：RAG 检索约束 + 输出引用强制标注 + Judge LLM 二次校验 + 人工复核通道 + 免责声明。<br />
 - <strong>可能遇到的问题</strong>：<br />
-   1. 原理关（LLM 本质是概率式 token 生成，不存在"确定性保证"机制，幻觉率只能压到 1~5%，理论无法归零）<br />
-   2. 验证关（评测集只能证明"测试集上幻觉率≤X%"，无法证明"所有输入都不幻觉"）<br />
+   1. LLM 本质是概率式 token 生成，不存在"确定性保证"机制，幻觉率只能压到 1~5%<br />
+   2. 评测集只能证明"测试集上幻觉率≤X%"，无法证明所有输入都不幻觉<br />
 - <strong>结论</strong>："归零"不可实现，"受控"可实现——以"幻觉率≤3%（评测集）+ 引用可核验"为可验收标准，配套免责与人工兜底。</p>
 <h4 id="2-1-4-资讯系统">2.1.4 资讯系统</h4>
 <ul>
@@ -476,9 +474,9 @@ hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
 </ul>
 <p><div class="tp-head"><span class="tp-badge">技术点 1</span><span class="tp-title">资讯聚合 + AI 摘要</span></div><br />
 - <strong>处理的问题</strong>：聚合时政/官方公告/面试技巧，分类 + 摘要 + 搜索。<br />
-- <strong>怎么做的</strong>：RSS + 白名单爬虫（遵守 robots）→ simhash 去重 → LLM 分类（few-shot）→ LLM 摘要（≤150 字+关键词）→ PG 全文索引（一期）→ 列表 + Tab + 热门排行（Redis 计数）。<br />
+- <strong>怎么做的</strong>：RSS + 白名单爬虫，遵守 robots → simhash 去重 → LLM 分类（few-shot）→ LLM 摘要（≤150 字+关键词）→ PG 全文索引（一期）→ 列表 + Tab + 热门排行（Redis 计数）。<br />
 - <strong>可能遇到的问题</strong>：<br />
-   1. 版权是真实风险（转载需注明来源、控制摘录篇幅，整篇搬运有侵权风险）<br />
+   1. 转载需注明来源、控制摘录篇幅，整篇搬运有侵权风险<br />
    2. 大站 WAF 需控频（≤日均 1/3）+ UA 合规 + 失败退避，不做绕过<br />
 - <strong>结论</strong>：技术成熟（分类≥90%、采集成功率≥95% 可验证），风险集中在版权与反爬合规边界，属产品策略问题。</p>
 <h3 id="2-2-与公司现有能力契合度">2.2 与公司现有能力契合度</h3>
