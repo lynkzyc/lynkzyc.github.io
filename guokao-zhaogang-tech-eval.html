@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国考选岗助手技术侧初步调研（评估版）</title>
+<style>
+:root{
+  --primary:#2563eb;--primary-dark:#1e40af;--primary-light:#eff6ff;
+  --accent:#f59e0b;--bg:#f1f5f9;--card:#fff;
+  --text:#1e293b;--text2:#475569;--text3:#94a3b8;--border:#e2e8f0;
+  --sidebar-bg:#0f172a;--sidebar-text:#94a3b8;--sidebar-active:#fff;
+  --risk-bg:#fff7ed;--risk-border:#f97316;--risk-text:#9a3412;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:14.5px;}
+a{color:var(--primary);text-decoration:none;}
+a:hover{text-decoration:underline;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;width:290px;height:100vh;overflow-y:auto;background:var(--sidebar-bg);padding:28px 0 40px;z-index:100;}
+.sidebar::-webkit-scrollbar{width:5px;}
+.sidebar::-webkit-scrollbar-thumb{background:#334155;border-radius:3px;}
+.side-brand{padding:0 24px 18px;border-bottom:1px solid #1e293b;margin-bottom:12px;}
+.side-brand .logo{font-size:16px;font-weight:700;color:#fff;line-height:1.5;}
+.side-brand .logo b{color:#60a5fa;}
+.side-brand .sub{font-size:12px;color:#64748b;margin-top:6px;}
+.nav-h2{display:block;padding:9px 24px 9px 20px;font-size:13.5px;font-weight:600;color:#cbd5e1;border-left:3px solid transparent;transition:all .15s;}
+.nav-h3{display:block;padding:5px 24px 5px 40px;font-size:12.5px;color:#64748b;border-left:3px solid transparent;}
+.nav-h4{display:block;padding:4px 24px 4px 56px;font-size:12px;color:#475569;border-left:3px solid transparent;}
+.nav-h2:hover,.nav-h3:hover,.nav-h4:hover{color:#fff;background:rgba(255,255,255,.05);text-decoration:none;}
+.nav-h2.active,.nav-h3.active,.nav-h4.active{color:#fff;border-left-color:var(--accent);background:rgba(255,255,255,.08);}
+.main{margin-left:290px;flex:1;min-width:0;padding:0 0 80px;}
+.content{max-width:980px;margin:0 auto;padding:44px 48px 0;}
+.main h1{font-size:26px;color:var(--primary-dark);margin:8px 0 20px;padding-bottom:14px;border-bottom:2px solid var(--primary);}
+.main h2{font-size:22px;color:var(--primary-dark);margin:52px 0 18px;padding-bottom:12px;border-bottom:2px solid var(--primary);scroll-margin-top:20px;}
+.main h3{font-size:17px;color:var(--text);margin:34px 0 12px;scroll-margin-top:20px;position:relative;padding-left:14px;}
+.main h3::before{content:"";position:absolute;left:0;top:5px;width:5px;height:18px;background:var(--primary);border-radius:2px;}
+.main h4{font-size:15px;color:var(--primary);margin:26px 0 10px;scroll-margin-top:20px;}
+.main p{margin:11px 0;}
+.main strong{color:var(--primary-dark);}
+.main ul,.main ol{margin:10px 0 10px 26px;}
+.main li{margin:5px 0;}
+blockquote{margin:16px 0;padding:12px 18px;background:#f8fafc;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;color:var(--text2);font-size:13.5px;}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:13px;box-shadow:0 1px 3px rgba(15,23,42,.05);border-radius:8px;overflow:hidden;}
+th{background:var(--primary);color:#fff;font-weight:600;padding:10px 13px;text-align:left;font-size:12.5px;}
+td{padding:9px 13px;border:1px solid var(--border);vertical-align:top;background:#fff;}
+tr:nth-child(even) td{background:#f8fafc;}
+tr:hover td{background:var(--primary-light);}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-family:Consolas,Menlo,monospace;font-size:12.5px;color:var(--primary-dark);}
+.tp-head{display:flex;align-items:center;gap:12px;margin:26px 0 2px;padding:12px 18px;background:linear-gradient(90deg,var(--primary-light) 0%,#fff 70%);border:1px solid #dbeafe;border-left:5px solid var(--primary);border-radius:10px;}
+.tp-badge{flex-shrink:0;background:var(--primary);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:.5px;}
+.tp-title{font-size:15px;font-weight:600;color:var(--primary-dark);}
+.tp-head ~ ul, .tp-head ~ ul ul{background:#f8fafc;border:1px solid var(--border);border-radius:0 0 10px 10px;padding:14px 18px 14px 40px;margin:0 0 8px;}
+.tp-head ~ ul > li{padding:4px 0;font-size:13.5px;}
+.tp-head ~ ul li strong{color:var(--primary);}
+.tp-head ~ ul ul{margin:6px 0 2px;padding:6px 18px 6px 30px;border:none;border-top:1px dashed var(--border);border-radius:0;background:transparent;}
+/* 第4章 风险结论样式 */
+.main h2:last-of-type{background:var(--risk-bg);border-bottom:2px solid var(--risk-border);color:var(--risk-text);padding:14px 18px;border-radius:10px;}
+hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
+@media (max-width:960px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .content{padding:24px 16px 0;}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-brand">
+      <div class="logo">国考选岗助手<br><b>技术侧初步调研</b></div>
+      <div class="sub">评估版 · 技术评估</div>
+    </div>
+    <nav>
+<a class="nav-h2" href="#1-同类产品形态盘点"><span class="nav-ico"></span>1. 同类产品形态盘点</a>
+<a class="nav-h3" href="#1-1-头部产品">1.1 头部产品</a>
+<a class="nav-h3" href="#1-2-产品形态选型规律">1.2 产品形态选型规律</a>
+<a class="nav-h3" href="#1-3-引流方向总结">1.3 引流方向总结</a>
+<a class="nav-h2" href="#2-核心技术方向与技术栈"><span class="nav-ico"></span>2. 核心技术方向与技术栈</a>
+<a class="nav-h3" href="#2-1-功能层-四大核心功能的技术实现">2.1 功能层：四大核心功能的技术实现</a>
+<a class="nav-h4" href="#2-1-1-题库系统">2.1.1 题库系统</a>
+<a class="nav-h4" href="#2-1-2-选岗匹配引擎">2.1.2 选岗匹配引擎</a>
+<a class="nav-h4" href="#2-1-3-ai-能力层">2.1.3 AI 能力层</a>
+<a class="nav-h4" href="#2-1-4-资讯系统">2.1.4 资讯系统</a>
+<a class="nav-h3" href="#2-2-与公司现有能力契合度">2.2 与公司现有能力契合度</a>
+<a class="nav-h2" href="#3-开发工作量与周期"><span class="nav-ico"></span>3. 开发工作量与周期</a>
+<a class="nav-h3" href="#3-1-阶段任务拆分">3.1 阶段任务拆分</a>
+<a class="nav-h4" href="#m0-mvp-验证-2-4-周">M0 · MVP 验证（2-4 周）</a>
+<a class="nav-h4" href="#m1-核心闭环-4-8-周">M1 · 核心闭环（+4-8 周）</a>
+<a class="nav-h4" href="#m2-差异化-商业化-8-16-周">M2 · 差异化 + 商业化（+8-16 周）</a>
+<a class="nav-h3" href="#3-2-总周期估算">3.2 总周期估算</a>
+<a class="nav-h3" href="#3-3-团队配置建议">3.3 团队配置建议</a>
+<a class="nav-h2" href="#4-技术侧初步评估结论"><span class="nav-ico"></span>4. 技术侧初步评估结论</a>
+<a class="nav-h3" href="#4-1-总体判断">4.1 总体判断</a>
+<a class="nav-h3" href="#4-2-可行部分-实现条件成熟">4.2 可行部分（实现条件成熟）</a>
+<a class="nav-h3" href="#4-3-不可行或高度受限部分-主要障碍">4.3 不可行或高度受限部分（主要障碍）</a>
+<a class="nav-h3" href="#4-4-团队与投入评估">4.4 团队与投入评估</a>
+<a class="nav-h3" href="#4-5-总体评价">4.5 总体评价</a>
+    </nav>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <h1>国考选岗助手技术侧初步调研</h1>
+<hr />
+<h2 id="1-同类产品形态盘点">1. 同类产品形态盘点</h2>
+<h3 id="1-1-头部产品">1.1 头部产品</h3>
+<table>
+<thead>
+<tr>
+<th>产品</th>
+<th>形态</th>
+<th>用户量级（口径标注）</th>
+<th>核心功能</th>
+<th>核心卖点</th>
+<th>引流方向</th>
+<th>技术特征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>粉笔</td>
+<td>APP（主）+ Web + 小程序</td>
+<td>注册7000万+/月活910万（宣传口径）</td>
+<td>题库、课程、职位库筛选器</td>
+<td>题库内容全、名师课程</td>
+<td>免费刷题→付费课程</td>
+<td>内容型：题库结构化+自研App</td>
+</tr>
+<tr>
+<td>中公</td>
+<td>APP + Web + 线下</td>
+<td>千余家分校</td>
+<td>1V1选岗咨询(99-999元)、课程</td>
+<td>人工服务+机构背书</td>
+<td>内容营销+线下导流</td>
+<td>服务型：人工咨询+职位筛选工具</td>
+</tr>
+<tr>
+<td>华图</td>
+<td>APP + Web</td>
+<td>1000+分校</td>
+<td>红领培优1对1、大数据选岗</td>
+<td>机构品牌+线下资源</td>
+<td>课程销售为主</td>
+<td>服务型</td>
+</tr>
+<tr>
+<td>公考雷达</td>
+<td>APP（主）+ 小程序 + Web</td>
+<td>累计下载破1亿（北京日报口径）</td>
+<td>职位匹配、实时报名人数、竞争热度、进面分</td>
+<td>数据全+更新快（公告后16秒同步、7分钟解析2万+岗位）</td>
+<td>免费工具→广告/会员/课程导流</td>
+<td><strong>数据引擎型</strong>：招考数据聚合+结构化解析</td>
+</tr>
+<tr>
+<td>夜灯公考</td>
+<td>Web + 小程序（AI）</td>
+<td>宣称AI选岗3万+人次（厂商口径）</td>
+<td>AI选岗、AI答疑、题库免费</td>
+<td>"AI免费"概念</td>
+<td>AI工具免费→课程</td>
+<td>AI型：LLM+RAG轻量组合</td>
+</tr>
+<tr>
+<td>上岸Claw</td>
+<td>Web/Agent形态</td>
+<td>未披露</td>
+<td>对话式选岗Agent、80万+岗位库</td>
+<td>自然语言对话选岗</td>
+<td>AI工具导航站分发</td>
+<td>Agent型：LLM+工具调用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-2-产品形态选型规律">1.2 产品形态选型规律</h3>
+<table>
+<thead>
+<tr>
+<th>形态</th>
+<th>适用场景</th>
+<th>技术成本</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>APP</strong></td>
+<td>高频刷题、重度用户</td>
+<td>高（双端+审核）</td>
+<td>留存强、推送直达、离线</td>
+<td>获客成本高、周期长</td>
+</tr>
+<tr>
+<td><strong>小程序</strong></td>
+<td>轻工具、选岗决策、分享裂变</td>
+<td>低（一套代码多端）</td>
+<td>即用即走、微信分享裂变、获客成本低</td>
+<td>功能受限、留存弱</td>
+</tr>
+<tr>
+<td><strong>Web</strong></td>
+<td>SEO内容获客、PC场景、AI工具展示</td>
+<td>中</td>
+<td>开发快、易演示、SEO流量</td>
+<td>移动场景弱</td>
+</tr>
+<tr>
+<td><strong>AI Agent/智能体</strong></td>
+<td>对话式交互、个性化咨询</td>
+<td>中（LLM成本）</td>
+<td>体验新、差异化、可解释</td>
+<td>准确率风险、信任门槛</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论（技术侧）</strong>：</p>
+<ul>
+<li><strong>数据引擎型（公考雷达）是当前选岗赛道真正的技术壁垒所在</strong>——不是 AI，而是"招考数据聚合 + 结构化解析 + 实时同步"的管线能力</li>
+<li>现有 AI 选岗产品（夜灯/上岸Claw）多为"LLM + 职位库"轻量组合，<strong>缺深度结构化匹配（专业三级目录）与动态策略</strong></li>
+<li>对软件公司：<strong>Web + 小程序双形态</strong>是成本最优切入（Web 做 AI 能力演示与 SEO，小程序做微信生态裂变），APP 后置</li>
+</ul>
+<h3 id="1-3-引流方向总结">1.3 引流方向总结</h3>
+<table>
+<thead>
+<tr>
+<th>引流方式</th>
+<th>代表</th>
+<th>需要的技术能力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>免费题库引流</td>
+<td>粉笔</td>
+<td>题库系统、组卷、判题</td>
+</tr>
+<tr>
+<td>免费选岗工具引流</td>
+<td>公考雷达</td>
+<td>职位数据管线、筛选器</td>
+</tr>
+<tr>
+<td>免费AI引流</td>
+<td>夜灯</td>
+<td>LLM API + RAG</td>
+</tr>
+<tr>
+<td>内容社区获客</td>
+<td>各家（小红书/知乎/B站）</td>
+<td>SEO、内容生成（可AI辅助）</td>
+</tr>
+<tr>
+<td>考试季流量峰值运营</td>
+<td>公考雷达</td>
+<td>高并发架构（公告日流量暴增）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-核心技术方向与技术栈">2. 核心技术方向与技术栈</h2>
+<h3 id="2-1-功能层-四大核心功能的技术实现">2.1 功能层：四大核心功能的技术实现</h3>
+<h4 id="2-1-1-题库系统">2.1.1 题库系统</h4>
+<table>
+<thead>
+<tr>
+<th>子功能</th>
+<th>技术实现</th>
+<th>难度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>题库管理</td>
+<td>题目结构化（科目/题型/难度/知识点标签）、CRUD、批量导入</td>
+<td>★★☆</td>
+</tr>
+<tr>
+<td>组卷引擎</td>
+<td>随机抽题、按知识点/难度权重智能组卷、防重复（近X题不重复）</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>判题</td>
+<td>客观题：选项比对自动判；主观题（申论）：LLM 辅助评分（可信度风险高）</td>
+<td>★★☆（客观）/★★★★（主观）</td>
+</tr>
+<tr>
+<td>每日练习/阶段测试</td>
+<td>题目队列 + 学习计划引擎 + 进度追踪</td>
+<td>★★☆</td>
+</tr>
+<tr>
+<td>错题本</td>
+<td>错题记录、知识点归因、 生成复习计划</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>模拟考试</td>
+<td>计时、交卷、分数统计、排名</td>
+<td>★★★</td>
+</tr>
+</tbody>
+</table>
+<p><strong>技术栈</strong>：后端题目服务 + 关系型存储（题目表/答题记录表）+ Redis（答题会话）</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 1</span><span class="tp-title">题库系统基础（管理/组卷/客观判题/错题）</span></div><br />
+- <strong>处理的问题</strong>：题目管理、组卷、客观题判题、错题记录与复习。<br />
+- <strong>怎么做的</strong>：题目结构化表 + 标签体系（科目/题型/难度/知识点）→ 组卷规则（知识点权重+难度配比+滑动窗口防重复）→ 客观题选项比对判题（确定性逻辑）→ 错题本 + SRS 间隔重复（SM-2/FSRS 成熟算法）→ 主观题只做"参考点评"不判分。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 系统本身零风险，风险全在"内容从哪来"（题目素材获取见技术点 2）<br />
+   2. OCR 对图表题数字抽取准确率低 → 图表题走人工录入或标注"仅文字题"<br />
+- <strong>结论</strong>：系统层可行（判题 100% 一致、组卷偏差≤5% 可验证）；内容层见技术点 2，两者必须分开评估。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 2</span><span class="tp-title">历年真题库的快速积累</span></div><br />
+- <strong>处理的问题</strong>：10 万+ 道行测/申论/面试真题 + 答案解析。<br />
+- <strong>怎么做的</strong>：爬取公开题源 → OCR + 人工校对 → 知识点打标 → 解析编写 → 入库。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 版权关（粉笔/中公/华图题库为商业资产，公开可合法获取的完整真题源极少）<br />
+   2. 人力成本关（每道题 5~15 分钟 → 10 万题 ≈ 4~12 人年）<br />
+   3. 答案解析本质是"知识生产"而非"数据处理"，自动化上限低<br />
+- <strong>结论</strong>：不是技术问题，是版权+人力成本问题；缓解路径只有采购/合作/众包/分步积累，自建 10 万题会严重超期超支。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 3</span><span class="tp-title">主观题（申论/面试）AI 权威评分</span></div><br />
+- <strong>处理的问题</strong>：对申论大作文、面试回答给出"可信的分数"。<br />
+- <strong>怎么做的</strong>：LLM 结合评分维度生成评分 → 展示分数 + 点评。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 缺权威 ground truth（官方评分标准不公开，无法建立训练与评测基准）<br />
+   2. 相关性上限（LLM 与人工评分约 0.6~0.8，不足以承担"权威评分"）<br />
+   3. 责任关（错误评分直接影响考生判断，无法兜底）<br />
+- <strong>结论</strong>："权威评分"当前不能实现；可降级为"AI 参考点评"（结构化的优点/不足/建议，明确非评分）——立项时应主动放弃"AI 判分"卖点。</p>
+<h4 id="2-1-2-选岗匹配引擎">2.1.2 选岗匹配引擎</h4>
+<table>
+<thead>
+<tr>
+<th>子能力</th>
+<th>技术实现</th>
+<th>难度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>硬性条件过滤</td>
+<td><strong>规则引擎</strong>：专业三级编码匹配、学历/学位/政治面貌/应届/基层年限/性别 多条件精确匹配</td>
+<td>★★★（专业匹配是难点，需映射表+每年更新）</td>
+</tr>
+<tr>
+<td>模糊语义理解</td>
+<td>LLM 理解用户描述（"稳一点的""离家近"）→ 转结构化查询</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>语义检索</td>
+<td>向量检索（pgvector/ES）+ 职位全文检索</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>混合排序</td>
+<td>规则命中数 + 向量相似度 + 竞争比加权 → 匹配度评分</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>竞争比预测</td>
+<td>历史进面分 + 报名趋势 + 实时增量 → 预测模型（<strong>准确率受限，只能给区间</strong>）</td>
+<td>★★★★</td>
+</tr>
+<tr>
+<td>可解释推荐</td>
+<td>推荐理由链（专业命中/学历命中/竞争强度/风险提示）</td>
+<td>★★★</td>
+</tr>
+</tbody>
+</table>
+<p><div class="tp-head"><span class="tp-badge">技术点 1</span><span class="tp-title">职位表结构化入库</span></div><br />
+- <strong>处理的问题</strong>：把官方发布的《招考简章.zip》（Excel 职位表，2026 年 20,714 岗位 / 38,119 人）转成结构化数据库。<br />
+- <strong>怎么做的</strong>：官方专题站"相关下载"获取 Excel → openpyxl/pandas 解析 → 字段映射标准化（枚举字段编码化、空值统一）→ <code>year</code> 分区表 + 年度导入脚本 + 对账任务。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 每年表头/格式可能微调 → 字段映射必须配置化，不能硬编码列名<br />
+   2. 专业字段存在三种粒度（大类/枚举多个具体专业/门类/"不限"），解析时必须保留粒度信息（技术点 2 的地基）<br />
+- <strong>结论</strong>：技术风险低，工作量集中在"每年对账 + 字段漂移兜底"，可验证（岗位数=官方数、抽样字段一致率≥99.5%）。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 2</span><span class="tp-title">专业三级目录匹配</span></div><br />
+- <strong>处理的问题</strong>：判断"考生专业"是否命中"岗位专业要求"。三级目录（门类 2 位 → 大类 4 位 → 具体专业 6 位），且税务系统用独立目录，本/硕/专三套目录并存。<br />
+- <strong>怎么做的</strong>：官方目录（含税务目录）建树形表 + 年度版本 → 三路并联匹配（6 位精确 / 4 位前缀 / 2 位前缀，+"不限"恒命中）→ 交叉学科映射表（考生专业→可报大类集合，人工维护约数百条）→ 税务目录独立分支。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 岗位专业要求一行内可能混合多种写法（"计算机类、电子信息类"），必须拆集合再匹配<br />
+   2. 每年目录新增专业 → 需"目录版本化 + 年度 diff"<br />
+   3. 目录外专业的覆盖靠映射表运营补齐，召回率预期内达不到 100%<br />
+- <strong>结论</strong>：规则可达 99% 精确率（2-3 周），剩余风险是"目录外专业"覆盖，靠映射表运营解决，不构成技术阻塞。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 3</span><span class="tp-title">硬性条件筛选（规则引擎）</span></div><br />
+- <strong>处理的问题</strong>：按学历、学位、政治面貌、是否应届、基层服务项目、基层工作年限、性别等条件做 AND/OR 组合过滤。<br />
+- <strong>怎么做的</strong>：Spring Boot 动态 SQL 构造 WHERE + 复合索引（2 万行量级无需 ES）→ 前端筛选表单 → JSON 查询条件 → 分页返回。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 应届身份有语义模糊地带（择业期两年内未就业算不算应届）——产品层必须用表单强制二选一，数据库只做等价转换<br />
+   2. 枚举字段索引设计需按高频组合调优<br />
+- <strong>结论</strong>：零技术风险，标准 CRUD+索引工程，正确性（与 Excel 手工筛选 100% 一致）与性能（P95&lt;200ms）均可量化验收。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 4</span><span class="tp-title">竞争比/进面分的高精度预测</span></div><br />
+- <strong>处理的问题</strong>：预测某岗位最终报名人数、竞争比、进面分数线。<br />
+- <strong>怎么做的</strong>：历史进面分 + 报名增量 + 岗位特征做回归/时序模型 → 输出预测值。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 样本极稀疏（每岗位每年只有 1 个最终值，年份间分布漂移大）<br />
+   2. 不可观测变量（弃考率、改报行为、跟风心理无法建模）<br />
+   3. 验证关（回测结果不能代表当年，前向验证只能在次年事后对账）<br />
+- <strong>结论</strong>：高精度预测不可实现（数据结构决定）；可降级为"参考区间 + 实时展示"（第 4~6 天当日竞争比本身是强信号），产品承诺务必降级。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 5</span><span class="tp-title">招录政策的年度变动预测</span></div><br />
+- <strong>处理的问题</strong>：预判明年招录规模、专业范围、应届政策的调整。<br />
+- <strong>怎么做的</strong>：对历史政策数据建模 → 预测下一年政策。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 政策由行政决策驱动，无公开可建模的确定规律，历史上规模/年龄/倾斜比例均出现无规律调整<br />
+   2. 验证关——无法对"未发生的事件"建立可验证模型<br />
+- <strong>结论</strong>：预测不可实现；应对是<strong>架构配置化</strong>（招考规则做成年度配置项，公告发布后 1 周内完成切换），把"年度适配流程"当工程能力建设。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 6</span><span class="tp-title">官方限制瓶颈（无 API / 实时数据延迟 / 反爬红线）</span></div><br />
+- <strong>处理的问题</strong>：① 官方提供 API 直接取数；② 竞争比分钟级实时；③ 高效抓取官方报名系统。<br />
+- <strong>怎么做的</strong>：公告期窗口采集官方公开数据 + 每日同步节奏 + 合规采集三原则（只抓公开页、守 robots 控频、注明来源）。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 治理关（官方不提供公开 API 且无开放计划<br />
+   2. 官方报名人数每日只更新一次 → 产品天然存在"一日延迟"，任何技术无法突破）<br />
+   3. 法律关（突破反爬可能触犯非法获取计算机信息系统数据罪<br />
+   4. 公务员及报考人员个人信息受法律严格保护，采集即违法——<strong>能做≠能上</strong>）<br />
+- <strong>结论</strong>：数据获取受治理+法律双重约束，技术上不可绕过；合规采集已覆盖产品 90% 数据需求（职位表/专业目录/每日过审人数均为官方公开），产品设计围绕"每日更新"节奏，并作为立项红线写死。</p>
+<h4 id="2-1-3-ai-能力层">2.1.3 AI 能力层</h4>
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>技术方案</th>
+<th>成本/难度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>大模型选型</td>
+<td>DeepSeek-V3.2（输入2元/输出3元每百万tokens）、豆包Lite（0.3元）、Qwen-Plus</td>
+<td>低：单次选岗会话约 0.008 元（估算）</td>
+</tr>
+<tr>
+<td>RAG 检索增强</td>
+<td>职位/真题/资讯向量化入库（pgvector/HNSW）+ 检索增强生成</td>
+<td>中</td>
+</tr>
+<tr>
+<td>Agent 编排</td>
+<td>MCP 工具调用：初筛→热度评估→定岗建议 工作流</td>
+<td>中</td>
+</tr>
+<tr>
+<td>幻觉控制</td>
+<td>RAG 约束生成 + 引用标注 + Judge LLM 校验 + 人工兜底</td>
+<td>中</td>
+</tr>
+<tr>
+<td>合规</td>
+<td>调用已备案大模型 API 走"登记"程序（非自研备案）</td>
+<td>低（流程性）</td>
+</tr>
+</tbody>
+</table>
+<p><div class="tp-head"><span class="tp-badge">技术点 1</span><span class="tp-title">RAG 问答（职位/真题/资讯）</span></div><br />
+- <strong>处理的问题</strong>：用户自然语言提问（"北京应届计算机硕士，有哪些竞争小一点的岗？"），系统检索 + 生成带依据的回答。<br />
+- <strong>怎么做的</strong>：职位/真题/资讯向量化入 pgvector（HNSW）→ 混合召回（向量 + BM25，权重可配）→ DeepSeek 生成（系统提示词"只允许基于检索结果回答"）→ 输出结构化 JSON（岗位列表+理由链+引用来源）。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 向量检索对结构化短文本职位未必优于规则精确匹配——正确姿势是"规则过滤为主、向量召回应答为辅"<br />
+   2. 幻觉只能压到极低不能归零（见 AI 能力层技术点 2）<br />
+   3. 评测集标注有偏差，需双人标注一致性（Kappa≥0.8）<br />
+   4. 0.008 元/次是估算，必须实测修正<br />
+- <strong>结论</strong>：技术可行，但"评测体系 + 引用约束"是投入重点（幻觉率≤3%、引用可核验≥95% 为硬验收指标）。</p>
+<p><div class="tp-head"><span class="tp-badge">技术点 2</span><span class="tp-title">AI 幻觉的 100% 消除</span></div><br />
+- <strong>处理的问题</strong>：让 LLM 永不输出编造的岗位、条件、政策。<br />
+- <strong>怎么做的</strong>：RAG 检索约束 + 输出引用强制标注 + Judge LLM 二次校验 + 人工复核通道 + 免责声明。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 原理关（LLM 本质是概率式 token 生成，不存在"确定性保证"机制，幻觉率只能压到 1~5%，理论无法归零）<br />
+   2. 验证关（评测集只能证明"测试集上幻觉率≤X%"，无法证明"所有输入都不幻觉"）<br />
+- <strong>结论</strong>："归零"不可实现，"受控"可实现——以"幻觉率≤3%（评测集）+ 引用可核验"为可验收标准，配套免责与人工兜底。</p>
+<h4 id="2-1-4-资讯系统">2.1.4 资讯系统</h4>
+<ul>
+<li>内容聚合管线（RSS + 爬虫）+ 分类 + AI 摘要 + 搜索</li>
+<li>难度：★☆☆</li>
+</ul>
+<p><div class="tp-head"><span class="tp-badge">技术点 1</span><span class="tp-title">资讯聚合 + AI 摘要</span></div><br />
+- <strong>处理的问题</strong>：聚合时政/官方公告/面试技巧，分类 + 摘要 + 搜索。<br />
+- <strong>怎么做的</strong>：RSS + 白名单爬虫（遵守 robots）→ simhash 去重 → LLM 分类（few-shot）→ LLM 摘要（≤150 字+关键词）→ PG 全文索引（一期）→ 列表 + Tab + 热门排行（Redis 计数）。<br />
+- <strong>可能遇到的问题</strong>：<br />
+   1. 版权是真实风险（转载需注明来源、控制摘录篇幅，整篇搬运有侵权风险）<br />
+   2. 大站 WAF 需控频（≤日均 1/3）+ UA 合规 + 失败退避，不做绕过<br />
+- <strong>结论</strong>：技术成熟（分类≥90%、采集成功率≥95% 可验证），风险集中在版权与反爬合规边界，属产品策略问题。</p>
+<h3 id="2-2-与公司现有能力契合度">2.2 与公司现有能力契合度</h3>
+<table>
+<thead>
+<tr>
+<th>现有能力</th>
+<th>迁移到本项目</th>
+<th>缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Web 建站（前后端）</td>
+<td>✅ 直接复用</td>
+<td>无</td>
+</tr>
+<tr>
+<td>系统集成（数据库/部署）</td>
+<td>✅ 后端架构直接复用</td>
+<td>无</td>
+</tr>
+<tr>
+<td>企业邮箱/域名</td>
+<td>✅ 基础支撑</td>
+<td>无</td>
+</tr>
+<tr>
+<td>数据采集管线</td>
+<td>🟡 有基础，需强化爬虫与合规</td>
+<td>反爬、定时增量、合规红线</td>
+</tr>
+<tr>
+<td>LLM/AI 工程</td>
+<td>❌ 需新建能力</td>
+<td>RAG、向量库、Agent 编排、评测</td>
+</tr>
+<tr>
+<td>题库内容资产</td>
+<td>❌ 完全无</td>
+<td>真题积累、标注体系</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-开发工作量与周期">3. 开发工作量与周期</h2>
+<h3 id="3-1-阶段任务拆分">3.1 阶段任务拆分</h3>
+<h4 id="m0-mvp-验证-2-4-周">M0 · MVP 验证（2-4 周）</h4>
+<table>
+<thead>
+<tr>
+<th>工作项</th>
+<th>人日</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>职位数据管线（Excel解析+入库+专业映射表初版）</td>
+<td>5-8</td>
+<td>P0，含每年更新流程设计</td>
+</tr>
+<tr>
+<td>筛选器前端 + 后端查询接口</td>
+<td>4-6</td>
+<td>多条件组合过滤</td>
+</tr>
+<tr>
+<td>RAG 选岗问答（向量化 + DeepSeek 集成 + 提示工程）</td>
+<td>4-6</td>
+<td>含 LLM 网关初版</td>
+</tr>
+<tr>
+<td>基础架构（部署、域名、登录、安全基线）</td>
+<td>3-5</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>小计</strong></td>
+<td><strong>16-25 人日</strong></td>
+<td>约 3-4 周（含联调）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>M0 验证指标</strong>：专业匹配准确率（抽样人工复核）、端到端响应 &lt; 5s、LLM 单次成本</p>
+<h4 id="m1-核心闭环-4-8-周">M1 · 核心闭环（+4-8 周）</h4>
+<table>
+<thead>
+<tr>
+<th>工作项</th>
+<th>人日</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>题库后台 + 题目结构化 + 批量导入</td>
+<td>8-12</td>
+<td>先行测客观题</td>
+</tr>
+<tr>
+<td>答题/判题/组卷引擎</td>
+<td>8-10</td>
+<td></td>
+</tr>
+<tr>
+<td>错题本 + SRS 复习</td>
+<td>5-7</td>
+<td>留存核心</td>
+</tr>
+<tr>
+<td>小程序端（uni-app 复用 Web 逻辑）</td>
+<td>6-10</td>
+<td>微信登录 + 选岗 + 刷题</td>
+</tr>
+<tr>
+<td>资讯聚合 + AI 摘要 + 分类</td>
+<td>4-6</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>小计</strong></td>
+<td><strong>31-45 人日</strong></td>
+<td>约 1.5-2 个月</td>
+</tr>
+</tbody>
+</table>
+<p><strong>M1 验证指标</strong>：小程序可用、日活留存、错题复习率</p>
+<h4 id="m2-差异化-商业化-8-16-周">M2 · 差异化 + 商业化（+8-16 周）</h4>
+<table>
+<thead>
+<tr>
+<th>工作项</th>
+<th>人日</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>专业匹配引擎精调（映射表完善+准确率评测）</td>
+<td>6-10</td>
+<td>差异化核心</td>
+</tr>
+<tr>
+<td>报名期快照采集管线（定时+告警）</td>
+<td>4-6</td>
+<td>等 2026 报名窗口实测</td>
+</tr>
+<tr>
+<td>可解释推荐（理由链 JSON + 前端展示）</td>
+<td>5-8</td>
+<td></td>
+</tr>
+<tr>
+<td>B 端 SaaS 管理后台 + 机构多租户</td>
+<td>8-12</td>
+<td>软件公司利润来源</td>
+</tr>
+<tr>
+<td>竞争比预测模型 v1</td>
+<td>4-6</td>
+<td>只给区间</td>
+</tr>
+<tr>
+<td><strong>小计</strong></td>
+<td><strong>27-42 人日</strong></td>
+<td>约 1.5-2 个月</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-2-总周期估算">3.2 总周期估算</h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>周期</th>
+<th>累计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M0</td>
+<td>2-4 周</td>
+<td>2-4 周</td>
+</tr>
+<tr>
+<td>M1</td>
+<td>4-8 周</td>
+<td>6-12 周</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>8-16 周</td>
+<td>14-28 周</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论：3-4 人团队约 3-6 个月可到商业化试运营门槛</strong>（不含题库内容积累，题库为长期并行投入）</p>
+<h3 id="3-3-团队配置建议">3.3 团队配置建议</h3>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>人数</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>后端工程师</td>
+<td>1-2</td>
+<td>Spring Boot + 数据管线 + 部署</td>
+</tr>
+<tr>
+<td>前端工程师</td>
+<td>1</td>
+<td>Web(Vue) + 小程序(uni-app)</td>
+</tr>
+<tr>
+<td>AI 工程师</td>
+<td>1</td>
+<td>RAG/Agent/评测/LLM 网关（可外包或复用 AI 能力）</td>
+</tr>
+<tr>
+<td>数据运营</td>
+<td>0.5-1</td>
+<td>题库标注、专业映射表、数据源监控</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-技术侧初步评估结论">4. 技术侧初步评估结论</h2>
+<h3 id="4-1-总体判断">4.1 总体判断</h3>
+<p>产品思路在技术层面<strong>只有有限范围可行</strong>：真正具备成熟实现条件的功能，仅限于<strong>基础选岗匹配、RAG 问答、公开资讯展示</strong>三项；其余涉及核心竞争价值的功能（题库内容、竞争比预测、AI 权威评分、实时数据等）均存在重大技术或数据障碍，短期难以达到可用水平，<strong>整体方案按预期推进的可能性较低</strong>。</p>
+<h3 id="4-2-可行部分-实现条件成熟">4.2 可行部分（实现条件成熟）</h3>
+<p>以下功能有成熟技术方案，可在 3-4 人、2-3 个月左右完成基础版本：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>实现条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础选岗匹配</td>
+<td>官方职位表（Excel）+ 专业目录为公开数据，规则匹配成熟</td>
+<td>仅限静态条件筛选（专业/学历/政治面貌等），<strong>不包含竞争比动态数据</strong></td>
+</tr>
+<tr>
+<td>RAG 问答</td>
+<td>职位数据向量化 + 大模型 API，单次成本约 0.008 元（估算）</td>
+<td>可回答选岗相关问题，但受幻觉边界约束，只能"参考建议"</td>
+</tr>
+<tr>
+<td>公开资讯展示</td>
+<td>RSS + 爬虫聚合，技术成熟</td>
+<td>时政/公告/面试技巧展示，需注意版权边界</td>
+</tr>
+</tbody>
+</table>
+<p><strong>需清醒认识</strong>：以上可行功能均为"公开信息工具"层面的能力，技术门槛不高，与市场上现有免费工具（粉笔筛选器、公考雷达等）<strong>难以形成差异化</strong>。</p>
+<h3 id="4-3-不可行或高度受限部分-主要障碍">4.3 不可行或高度受限部分（主要障碍）</h3>
+<table>
+<thead>
+<tr>
+<th>功能/能力</th>
+<th>障碍性质</th>
+<th>具体问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>题库内容建设</td>
+<td>重资产</td>
+<td>10 万+ 真题结构化 + 解析 ≈ 4-12 人年；公开合法题源极少（版权壁垒）</td>
+</tr>
+<tr>
+<td>竞争比/进面分预测</td>
+<td>数据受限</td>
+<td>官方每年仅 10 天窗口、每岗位每年 1 个观测值，跨年不可比，高精度预测不可实现</td>
+</tr>
+<tr>
+<td>实时竞争比</td>
+<td>治理受限</td>
+<td>官方无 API、每日仅更新一次，产品天然存在"一日延迟"，无法突破</td>
+</tr>
+<tr>
+<td>AI 权威评分</td>
+<td>原理受限</td>
+<td>主观题无权威评分基准，LLM 相关性仅 0.6-0.8，不能承担"权威评分"责任</td>
+</tr>
+<tr>
+<td>AI 幻觉消除</td>
+<td>原理受限</td>
+<td>大模型概率生成本质，幻觉只能压到 ≤3%，无法归零</td>
+</tr>
+<tr>
+<td>真实报名数据</td>
+<td>法律红线</td>
+<td>公务员及报考人员个人信息受法律严格保护，"能做≠能上"</td>
+</tr>
+<tr>
+<td>招录政策预测</td>
+<td>不可建模</td>
+<td>政策由行政决策驱动，无规律可循</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-4-团队与投入评估">4.4 团队与投入评估</h3>
+<ul>
+<li>现有能力（Web 建站、系统集成、数据库部署）可复用，但 <strong>LLM/AI 工程、数据采集、题库标注均为新建能力</strong>，存在明显缺口。</li>
+<li>AI 相关部分需外聘或外包，增加 0.5-1 人成本；数据运营为持续性投入。</li>
+<li>合规成本：生成式 AI 服务需登记（前置数周），爬虫需严格守合规红线。</li>
+</ul>
+<h3 id="4-5-总体评价">4.5 总体评价</h3>
+<p>综合评估，本方案存在<strong>以下突出问题</strong>：</p>
+<ol>
+<li><strong>可行部分缺乏差异化</strong>：基础选岗匹配、RAG 问答、资讯展示均与市场现有免费工具高度重合，难以形成产品竞争力。</li>
+<li><strong>核心价值功能短期无法实现</strong>：题库内容、竞争比预测、AI 权威评分等差异化能力，均受重资产、数据或原理层面的硬约束，短期内无法达到预期。</li>
+<li><strong>技术难度被低估</strong>：AI 工程、数据采集、题库标注等能力需从零建设，涉及大量人力与时间投入，且部分功能（预测、评分）受原理约束，投入也不一定能达到预期效果。</li>
+<li><strong>合规与数据红线</strong>：多个理想功能受法律与数据源约束，产品定位只能局限为"公开信息工具"。</li>
+</ol>
+    </div>
+  </main>
+</div>
+<script>
+(function(){
+  var links = document.querySelectorAll('.nav-h2,.nav-h3,.nav-h4');
+  var sections = [];
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if(el) sections.push({el:el,link:a});
+  });
+  function onScroll(){
+    var pos = window.scrollY + 130;
+    var current = sections[0];
+    sections.forEach(function(s){ if(s.el.offsetTop <= pos) current = s; });
+    links.forEach(function(a){ a.classList.remove('active'); });
+    if(current) current.link.classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+})();
+</script>
+</body>
+</html>
