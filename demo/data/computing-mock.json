@@ -1,0 +1,478 @@
+{
+  "period": "2026-09",
+  "resources": [
+    [
+      "1",
+      "GPU容器",
+      "RTX4090-24G-A754X",
+      "1.86",
+      "42.41",
+      "281.23",
+      "1138.32"
+    ],
+    [
+      "2",
+      "GPU容器",
+      "RTX4090-48G-A7542",
+      "2.56",
+      "58.37",
+      "387.07",
+      "1566.72"
+    ],
+    [
+      "3",
+      "GPU容器",
+      "RTX5090-32G-I6530",
+      "2.56",
+      "58.37",
+      "387.07",
+      "1566.72"
+    ],
+    [
+      "4",
+      "GPU容器",
+      "RTX5090-32G-I6530-SW",
+      "2.58",
+      "58.82",
+      "390.1",
+      "1578.96"
+    ],
+    [
+      "5",
+      "GPU容器",
+      "A100-40G-PCIE-I6348",
+      "3.18",
+      "72.5",
+      "480.82",
+      "1946.16"
+    ],
+    [
+      "6",
+      "GPU容器",
+      "A100-80G-SXM-I8358P",
+      "6.98",
+      "159.14",
+      "1055.38",
+      "4271.76"
+    ],
+    [
+      "7",
+      "GPU容器",
+      "H200-SXM-141G-I8568Y",
+      "34.99",
+      "797.77",
+      "5290.49",
+      "21413.9"
+    ],
+    [
+      "8",
+      "GPU容器",
+      "iluvatar-BI-V100-32G-A7542",
+      "1.32",
+      "30.1",
+      "199.58",
+      "807.84"
+    ],
+    [
+      "9",
+      "GPU容器",
+      "CPU-AMD-7542-2.9GHz-v3",
+      "0.08",
+      "1.82",
+      "12.1",
+      "48.96"
+    ],
+    [
+      "10",
+      "容器存储(GB/天)",
+      "系统盘/镜像",
+      "0.006"
+    ],
+    [
+      "11",
+      "容器存储(GB/天)",
+      "共享存储FSAS",
+      "0.005"
+    ],
+    [
+      "12",
+      "容器存储(GB/天)",
+      "共享存储FSSD",
+      "0.010"
+    ],
+    [
+      "12",
+      "HPC队列（核时）",
+      "I-Sky40c-192",
+      "0.05"
+    ],
+    [
+      "13",
+      "HPC队列（核时）",
+      "A-Rom64-256",
+      "0.05"
+    ],
+    [
+      "13",
+      "HPC存储（TB/天）",
+      "共享存储FSAS",
+      "3.20"
+    ]
+  ],
+  "models": [
+    {
+      "name": "DeepSeek-V4-pro正式版",
+      "spec": "input_token",
+      "price": "4.500",
+      "description": "DeepSeek-V4-Pro 正式版（GA），深度求索推出的高效通用旗舰模型，1M 上下文、最大 384K 输出，Agent 能力大幅增强，擅长代码修改、工具调用与多步骤长程任务，支持 Responses API、三档思考强度（low/high/max）"
+    },
+    {
+      "name": "DeepSeek-V4-pro正式版",
+      "spec": "input_token_cache",
+      "price": "0.150",
+      "description": "DeepSeek-V4-Pro 正式版（GA），深度求索推出的高效通用旗舰模型，1M 上下文、最大 384K 输出，Agent 能力大幅增强，擅长代码修改、工具调用与多步骤长程任务，支持 Responses API、三档思考强度（low/high/max）"
+    },
+    {
+      "name": "DeepSeek-V4-pro正式版",
+      "spec": "output_token",
+      "price": "13.500",
+      "description": "DeepSeek-V4-Pro 正式版（GA），深度求索推出的高效通用旗舰模型，1M 上下文、最大 384K 输出，Agent 能力大幅增强，擅长代码修改、工具调用与多步骤长程任务，支持 Responses API、三档思考强度（low/high/max）"
+    },
+    {
+      "name": "deepseek-v4-flash正式版",
+      "spec": "input_token",
+      "price": "1.500",
+      "description": "DeepSeek 新一代 MoE 大模型，552B 总参、采用创新 CED 因果编解码器非对称架构（输入激活 8B / 输出 16B），原生多模态，1M 上下文，KV Cache 占用大幅下降，速度更快、成本更低；"
+    },
+    {
+      "name": "deepseek-v4-flash正式版",
+      "spec": "input_token_cache",
+      "price": "0.050",
+      "description": "DeepSeek 新一代 MoE 大模型，552B 总参、采用创新 CED 因果编解码器非对称架构（输入激活 8B / 输出 16B），原生多模态，1M 上下文，KV Cache 占用大幅下降，速度更快、成本更低；"
+    },
+    {
+      "name": "deepseek-v4-flash正式版",
+      "spec": "output_token",
+      "price": "4.500",
+      "description": "DeepSeek 新一代 MoE 大模型，552B 总参、采用创新 CED 因果编解码器非对称架构（输入激活 8B / 输出 16B），原生多模态，1M 上下文，KV Cache 占用大幅下降，速度更快、成本更低；"
+    },
+    {
+      "name": "kimi-k3",
+      "spec": "input_token",
+      "price": "20.000",
+      "description": "Kimi 当前最强旗舰，2.8 万亿参数 MoE、原生视觉理解、100 万 token 上下文，面向复杂推理与长程 Agent 任务，权重与技术报告已开源。"
+    },
+    {
+      "name": "kimi-k3",
+      "spec": "input_token_cache",
+      "price": "2.000",
+      "description": "Kimi 当前最强旗舰，2.8 万亿参数 MoE、原生视觉理解、100 万 token 上下文，面向复杂推理与长程 Agent 任务，权重与技术报告已开源。"
+    },
+    {
+      "name": "kimi-k3",
+      "spec": "output_token",
+      "price": "100.000",
+      "description": "Kimi 当前最强旗舰，2.8 万亿参数 MoE、原生视觉理解、100 万 token 上下文，面向复杂推理与长程 Agent 任务，权重与技术报告已开源。"
+    },
+    {
+      "name": "kimi-k2.7-code",
+      "spec": "input_token",
+      "price": "4.875",
+      "description": "Kimi 开源的编程专用 Agent 模型，1T 总参 / 32B 激活、256K 上下文，专为长程编程打造，较 K2.6 节省约 30% 思考 token，为 Kimi Code 默认模型。"
+    },
+    {
+      "name": "kimi-k2.7-code",
+      "spec": "input_token_cache",
+      "price": "0.975",
+      "description": "Kimi 开源的编程专用 Agent 模型，1T 总参 / 32B 激活、256K 上下文，专为长程编程打造，较 K2.6 节省约 30% 思考 token，为 Kimi Code 默认模型。"
+    },
+    {
+      "name": "kimi-k2.7-code",
+      "spec": "output_token",
+      "price": "20.250",
+      "description": "Kimi 开源的编程专用 Agent 模型，1T 总参 / 32B 激活、256K 上下文，专为长程编程打造，较 K2.6 节省约 30% 思考 token，为 Kimi Code 默认模型。"
+    },
+    {
+      "name": "kimi-k2.6",
+      "spec": "input_token",
+      "price": "4.875",
+      "description": "Kimi 上一代旗舰，1T / 32B、约 262K 上下文，支持文本/图像/视频输入，通用 Agent、代码与视觉能力全面增强（K2.7 无思考场景仍由其服务）。"
+    },
+    {
+      "name": "kimi-k2.6",
+      "spec": "input_token_cache",
+      "price": "0.825",
+      "description": "Kimi 上一代旗舰，1T / 32B、约 262K 上下文，支持文本/图像/视频输入，通用 Agent、代码与视觉能力全面增强（K2.7 无思考场景仍由其服务）。"
+    },
+    {
+      "name": "kimi-k2.6",
+      "spec": "output_token",
+      "price": "20.250",
+      "description": "Kimi 上一代旗舰，1T / 32B、约 262K 上下文，支持文本/图像/视频输入，通用 Agent、代码与视觉能力全面增强（K2.7 无思考场景仍由其服务）。"
+    },
+    {
+      "name": "qwen3.8-max",
+      "spec": "context_input_token",
+      "price": "11.400",
+      "description": "千问家族最强、首个开放权重的 Max 级模型，2.4T 参数 / 95B 激活，面向编程、工作、研究与长程任务，可端到端可靠交付复杂任务。"
+    },
+    {
+      "name": "qwen3.8-max",
+      "spec": "context_output_token",
+      "price": "34.200",
+      "description": "千问家族最强、首个开放权重的 Max 级模型，2.4T 参数 / 95B 激活，面向编程、工作、研究与长程任务，可端到端可靠交付复杂任务。"
+    },
+    {
+      "name": "qwen3.8-max",
+      "spec": "context_input_token_cache",
+      "price": "0.950",
+      "description": "千问家族最强、首个开放权重的 Max 级模型，2.4T 参数 / 95B 激活，面向编程、工作、研究与长程任务，可端到端可靠交付复杂任务。"
+    },
+    {
+      "name": "qwen3.8-max",
+      "spec": "context_input_token_cache_creation",
+      "price": "14.250",
+      "description": "千问家族最强、首个开放权重的 Max 级模型，2.4T 参数 / 95B 激活，面向编程、工作、研究与长程任务，可端到端可靠交付复杂任务。"
+    },
+    {
+      "name": "qwen3.7-max",
+      "spec": "context_input_token",
+      "price": "9.750",
+      "description": "Qwen3.7 系列规模最大、能力最强的 Max 版纯文本模型，面向智能体时代，强化编程、办公生产力与长周期自主执行。"
+    },
+    {
+      "name": "qwen3.7-max",
+      "spec": "context_output_token",
+      "price": "29.250",
+      "description": "Qwen3.7 系列规模最大、能力最强的 Max 版纯文本模型，面向智能体时代，强化编程、办公生产力与长周期自主执行。"
+    },
+    {
+      "name": "qwen3.7-max",
+      "spec": "context_input_token_cache",
+      "price": "0.975",
+      "description": "Qwen3.7 系列规模最大、能力最强的 Max 版纯文本模型，面向智能体时代，强化编程、办公生产力与长周期自主执行。"
+    },
+    {
+      "name": "qwen3.7-max",
+      "spec": "context_input_token_cache_creation",
+      "price": "12.188",
+      "description": "Qwen3.7 系列规模最大、能力最强的 Max 版纯文本模型，面向智能体时代，强化编程、办公生产力与长周期自主执行。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_0-256k_input_token",
+      "price": "1.625",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_256k-1m_input_token",
+      "price": "4.875",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_0-256k_output_token",
+      "price": "6.500",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_256k-1m_output_token",
+      "price": "19.500",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_0-256k_input_token_cache",
+      "price": "0.163",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_256k-1m_input_token_cache",
+      "price": "0.488",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_0-256k_input_token_cache_creation",
+      "price": "2.031",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "qwen3.7-plus",
+      "spec": "context_256k-1m_input_token_cache_creation",
+      "price": "6.094",
+      "description": "Qwen3.7 系列高性价比版本，强文本能力 + 全面升级的视觉语言理解，支持读屏操作 GUI、按视觉参考生成代码等多模态混合 Agent 任务。"
+    },
+    {
+      "name": "MiniMax-M3",
+      "spec": "context_0-512k_input_token",
+      "price": "2.625",
+      "description": "最新 M 系列语言模型，1M 上下文的原生多模态前沿编程模型，适用于 Agent 推理、工具调用、代码和长上下文任务（自研 MSA 稀疏注意力，可操作桌面电脑）。"
+    },
+    {
+      "name": "MiniMax-M3",
+      "spec": "context_512k+_input_token",
+      "price": "5.250",
+      "description": "最新 M 系列语言模型，1M 上下文的原生多模态前沿编程模型，适用于 Agent 推理、工具调用、代码和长上下文任务（自研 MSA 稀疏注意力，可操作桌面电脑）。"
+    },
+    {
+      "name": "MiniMax-M3",
+      "spec": "context_0-512k_output_token",
+      "price": "10.500",
+      "description": "最新 M 系列语言模型，1M 上下文的原生多模态前沿编程模型，适用于 Agent 推理、工具调用、代码和长上下文任务（自研 MSA 稀疏注意力，可操作桌面电脑）。"
+    },
+    {
+      "name": "MiniMax-M3",
+      "spec": "context_512k+_output_token",
+      "price": "21.000",
+      "description": "最新 M 系列语言模型，1M 上下文的原生多模态前沿编程模型，适用于 Agent 推理、工具调用、代码和长上下文任务（自研 MSA 稀疏注意力，可操作桌面电脑）。"
+    },
+    {
+      "name": "MiniMax-M3",
+      "spec": "context_0-512k_input_token_cache",
+      "price": "0.525",
+      "description": "最新 M 系列语言模型，1M 上下文的原生多模态前沿编程模型，适用于 Agent 推理、工具调用、代码和长上下文任务（自研 MSA 稀疏注意力，可操作桌面电脑）。"
+    },
+    {
+      "name": "MiniMax-M3",
+      "spec": "context_512k+_input_token_cache",
+      "price": "1.050",
+      "description": "最新 M 系列语言模型，1M 上下文的原生多模态前沿编程模型，适用于 Agent 推理、工具调用、代码和长上下文任务（自研 MSA 稀疏注意力，可操作桌面电脑）。"
+    },
+    {
+      "name": "GLM-5.3",
+      "spec": "input_token",
+      "price": "6.400",
+      "description": "与 GLM-5.2 同基座、纯靠后训练 Scaling 提升的编程增强模型，官方定位「编程最强开源模型」，代码 Agent 与网络安全能力显著跃升。"
+    },
+    {
+      "name": "GLM-5.3",
+      "spec": "input_token_cache",
+      "price": "1.600",
+      "description": "与 GLM-5.2 同基座、纯靠后训练 Scaling 提升的编程增强模型，官方定位「编程最强开源模型」，代码 Agent 与网络安全能力显著跃升。"
+    },
+    {
+      "name": "GLM-5.3",
+      "spec": "output_token",
+      "price": "22.400",
+      "description": "与 GLM-5.2 同基座、纯靠后训练 Scaling 提升的编程增强模型，官方定位「编程最强开源模型」，代码 Agent 与网络安全能力显著跃升。"
+    },
+    {
+      "name": "GLM-5.2",
+      "spec": "input_token",
+      "price": "4.000",
+      "description": "专注 Coding 与长程任务的开源模型（MIT），主打「真正可用的 1M 无损上下文」，发布首日即适配昇腾、平头哥、摩尔线程、寒武纪等国产芯片。"
+    },
+    {
+      "name": "GLM-5.2",
+      "spec": "input_token_cache",
+      "price": "1.000",
+      "description": "专注 Coding 与长程任务的开源模型（MIT），主打「真正可用的 1M 无损上下文」，发布首日即适配昇腾、平头哥、摩尔线程、寒武纪等国产芯片。"
+    },
+    {
+      "name": "GLM-5.2",
+      "spec": "output_token",
+      "price": "14.000",
+      "description": "专注 Coding 与长程任务的开源模型（MIT），主打「真正可用的 1M 无损上下文」，发布首日即适配昇腾、平头哥、摩尔线程、寒武纪等国产芯片。"
+    },
+    {
+      "name": "seedance-2.0-pro",
+      "spec": "480p含视频",
+      "price": "25.200",
+      "description": "字节统一多模态视频生成模型，支持文生、首帧/首尾帧图生、全模态参考生视频（9 图 + 3 视频 + 3 音频），原生音频与口型同步、复杂运镜，最高 4K/10bit。"
+    },
+    {
+      "name": "seedance-2.0-pro",
+      "spec": "480p仅文本",
+      "price": "41.400",
+      "description": "字节统一多模态视频生成模型，支持文生、首帧/首尾帧图生、全模态参考生视频（9 图 + 3 视频 + 3 音频），原生音频与口型同步、复杂运镜，最高 4K/10bit。"
+    },
+    {
+      "name": "seedance-2.0-pro",
+      "spec": "720p含视频",
+      "price": "25.200",
+      "description": "字节统一多模态视频生成模型，支持文生、首帧/首尾帧图生、全模态参考生视频（9 图 + 3 视频 + 3 音频），原生音频与口型同步、复杂运镜，最高 4K/10bit。"
+    },
+    {
+      "name": "seedance-2.0-pro",
+      "spec": "720p仅文本",
+      "price": "41.400",
+      "description": "字节统一多模态视频生成模型，支持文生、首帧/首尾帧图生、全模态参考生视频（9 图 + 3 视频 + 3 音频），原生音频与口型同步、复杂运镜，最高 4K/10bit。"
+    },
+    {
+      "name": "seedance-2.0-pro",
+      "spec": "1080p含视频",
+      "price": "27.900",
+      "description": "字节统一多模态视频生成模型，支持文生、首帧/首尾帧图生、全模态参考生视频（9 图 + 3 视频 + 3 音频），原生音频与口型同步、复杂运镜，最高 4K/10bit。"
+    },
+    {
+      "name": "seedance-2.0-pro",
+      "spec": "1080p仅文本",
+      "price": "45.900",
+      "description": "字节统一多模态视频生成模型，支持文生、首帧/首尾帧图生、全模态参考生视频（9 图 + 3 视频 + 3 音频），原生音频与口型同步、复杂运镜，最高 4K/10bit。"
+    },
+    {
+      "name": "doubao-seedance-2-5",
+      "spec": "480p、720p含视频",
+      "price": "37.800",
+      "description": "Seedance 2.0 下一代，支持 30 秒视频连贯直出与多轮延长，全模态参考扩展至 30 图 / 10 视频 / 10 音频（可仅传音频），新增时间戳精准编辑、绿幕/视角编辑，已上线即梦、豆包专业版与火山方舟。"
+    },
+    {
+      "name": "doubao-seedance-2-5",
+      "spec": "480p、720p不含视频",
+      "price": "63.000",
+      "description": "Seedance 2.0 下一代，支持 30 秒视频连贯直出与多轮延长，全模态参考扩展至 30 图 / 10 视频 / 10 音频（可仅传音频），新增时间戳精准编辑、绿幕/视角编辑，已上线即梦、豆包专业版与火山方舟。"
+    },
+    {
+      "name": "doubao-seedance-2-5",
+      "spec": "1080p含视频",
+      "price": "41.400",
+      "description": "Seedance 2.0 下一代，支持 30 秒视频连贯直出与多轮延长，全模态参考扩展至 30 图 / 10 视频 / 10 音频（可仅传音频），新增时间戳精准编辑、绿幕/视角编辑，已上线即梦、豆包专业版与火山方舟。"
+    },
+    {
+      "name": "doubao-seedance-2-5",
+      "spec": "1080p不含视频",
+      "price": "69.300",
+      "description": "Seedance 2.0 下一代，支持 30 秒视频连贯直出与多轮延长，全模态参考扩展至 30 图 / 10 视频 / 10 音频（可仅传音频），新增时间戳精准编辑、绿幕/视角编辑，已上线即梦、豆包专业版与火山方舟。"
+    },
+    {
+      "name": "wan3.0-video",
+      "spec": "元 / 秒_480P",
+      "price": "0.210",
+      "description": "万相 3.0 全能参考（All-in-One）视频模型，支持文/图/视频/音频多模态输入，统一文生、图生（首帧/首尾帧）、参考生视频，480P/720P/1080P、最长 30 秒。"
+    },
+    {
+      "name": "wan3.0-video",
+      "spec": "元 / 秒_720P",
+      "price": "0.420",
+      "description": "万相 3.0 全能参考（All-in-One）视频模型，支持文/图/视频/音频多模态输入，统一文生、图生（首帧/首尾帧）、参考生视频，480P/720P/1080P、最长 30 秒。"
+    },
+    {
+      "name": "wan3.0-video",
+      "spec": "元 / 秒_1080P",
+      "price": "0.840",
+      "description": "万相 3.0 全能参考（All-in-One）视频模型，支持文/图/视频/音频多模态输入，统一文生、图生（首帧/首尾帧）、参考生视频，480P/720P/1080P、最长 30 秒。"
+    },
+    {
+      "name": "wan3.0-video-prime",
+      "spec": "元 / 秒_480P",
+      "price": "0.360",
+      "description": "万相 3.0 优速版，能力对齐标准版（四模态参考、30 秒、1080P/30fps），端到端生成速度大幅提升，适合高频批量生成。"
+    },
+    {
+      "name": "wan3.0-video-prime",
+      "spec": "元 / 秒_720P",
+      "price": "0.720",
+      "description": "万相 3.0 优速版，能力对齐标准版（四模态参考、30 秒、1080P/30fps），端到端生成速度大幅提升，适合高频批量生成。"
+    },
+    {
+      "name": "wan3.0-video-prime",
+      "spec": "元 / 秒_1080P",
+      "price": "1.440",
+      "description": "万相 3.0 优速版，能力对齐标准版（四模态参考、30 秒、1080P/30fps），端到端生成速度大幅提升，适合高频批量生成。"
+    }
+  ]
+}

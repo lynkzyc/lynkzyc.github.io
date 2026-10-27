@@ -1,0 +1,113 @@
+/* 公共变量、基础重置和容器；各子页面先加载本文件。 */
+:root {
+  --ink: #0f162a;
+  --muted: #64728b;
+  --green: #559e8b;
+  --green-light: #9ac495;
+  --footer: #34393f;
+  --header-h: clamp(64px, 3.9583vw, 76px);
+  --gutter: 8.3333vw;
+  --fast: 180ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+* {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  width: 100%;
+}
+body {
+  font-family: "Noto Sans SC", "Noto Sans Hans", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  color: var(--ink);
+  background: #fff;
+}
+button, input {
+  font: inherit;
+}
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  color: inherit;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+h1, h2, h3, p, dl, dd {
+  margin: 0;
+}
+button {
+  border: 0;
+  background: none;
+}
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid #267c69;
+  outline-offset: 5px;
+}
+[hidden] {
+  display: none !important;
+}
+.container {
+  width: calc(100% - var(--gutter) * 2);
+  max-width: 1604px;
+  margin-inline: auto;
+}
+h2 {
+  font-size: clamp(28px, 2.0833vw, 40px);
+  line-height: 1.35;
+  font-weight: 700;
+}
+.common-icon {
+  display: block;
+  flex: none;
+  fill: currentColor;
+}
+@media (max-width: 1599px) {
+  :root {
+    --gutter: 5vw;
+  }
+}
+@media (max-width: 1199px) {
+  :root {
+    --gutter: 32px;
+    --header-h: 64px;
+  }
+}
+@media (max-width: 991px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+@media (max-width: 767px) {
+  :root {
+    --gutter: 20px;
+    --header-h: 64px;
+  }
+  h2 {
+    font-size: 27px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *:before, *:after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+/* 移动设计稿为 750px 二倍图；375px 视口下 2 个设计像素 = 1 CSS px。 */
+@media (max-width: 767px) {
+  :root {
+    --mobile-unit: calc(100vw / 750);
+    --gutter: calc(22 * var(--mobile-unit));
+    --header-h: calc(80 * var(--mobile-unit));
+  }
+}
